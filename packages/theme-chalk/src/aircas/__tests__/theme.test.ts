@@ -4,6 +4,7 @@ import { compile } from 'sass-embedded'
 import { afterEach, beforeAll, describe, expect, it } from 'vitest'
 
 let rules: CSSStyleRule[]
+let officialRules: CSSStyleRule[]
 let loadedSources: string[]
 let officialDefinitions: Set<string>
 const initialDark = document.documentElement.classList.contains('dark')
@@ -25,6 +26,17 @@ beforeAll(() => {
   officialDefinitions = new Set(
     Array.from(officialCSS.matchAll(/(--[\w-]+)\s*:/g), ([, name]) => name)
   )
+  style.textContent = compile(
+    resolve('packages/theme-chalk/src/button.scss')
+  ).css.replace(/@charset[^;]+;/g, '')
+  document.head.append(style)
+  officialRules = Array.from(style.sheet!.cssRules).filter(
+    (rule) =>
+      'selectorText' in rule &&
+      typeof rule.selectorText === 'string' &&
+      !rule.selectorText.includes('::')
+  ) as CSSStyleRule[]
+  style.remove()
 })
 
 const declarations = (rule: CSSStyleRule) =>
@@ -90,10 +102,10 @@ describe('AirCAS compiled theme', () => {
     expect(unknown).toEqual([])
   })
 
-  it('uses the interaction cyan globally with navy surfaces and designed statuses', () => {
+  it('uses the brand color globally with navy surfaces and designed statuses', () => {
     const dark = rootVariables(true)
     const expected = {
-      '--el-color-primary': '#00c4e5',
+      '--el-color-primary': '#126681',
       '--el-color-success': '#21d36a',
       '--el-color-warning': '#e2c626',
       '--el-color-danger': '#eb5058',
@@ -107,21 +119,31 @@ describe('AirCAS compiled theme', () => {
     for (const [name, value] of Object.entries(expected))
       expect(resolveVariable(dark, name), name).toBe(value)
     expect(resolveVariable(dark, '--el-color-primary-rgb')).toMatch(
-      /^0,\s*196,\s*229$/
+      /^18,\s*102,\s*129$/
     )
   })
 
-  it('derives primary states from cyan and keeps explicit status ramps and aliases', () => {
+  it.each([
+    ['light-3', 70, '#00122c', '#0d4d68'],
+    ['light-5', 50, '#00122c', '#093c57'],
+    ['light-7', 30, '#00122c', '#052b46'],
+    ['light-8', 20, '#00122c', '#04233d'],
+    ['light-9', 10, '#00122c', '#021a35'],
+    ['dark-2', 80, '#e1eaf3', '#3b8098'],
+  ])('derives primary %s from the brand color', (suffix, weight, base, hex) => {
     const dark = rootVariables(true)
-    const primaryHover = resolveVariable(dark, '--el-color-primary-light-3')
-    // Native dark-mode light-3 mixes 70% primary with 30% background.
-    if (primaryHover.startsWith('color-mix(')) {
-      const expression = primaryHover.replace(/\s+/g, '')
-      expect(expression).toContain('#00c4e570%')
-      expect(expression).toContain('#00122c')
+    const state = resolveVariable(dark, `--el-color-primary-${suffix}`)
+    if (state.startsWith('color-mix(')) {
+      expect(state.replace(/\s+/g, '')).toBe(
+        `color-mix(insrgb,#126681${weight}%,${base})`
+      )
     } else {
-      expect(new TinyColor(primaryHover).toHexString()).toBe('#008fae')
+      expect(new TinyColor(state).toHexString()).toBe(hex)
     }
+  })
+
+  it('keeps explicit status ramps and aliases', () => {
+    const dark = rootVariables(true)
     expect(resolveVariable(dark, '--el-color-success-light-3')).toBe('#279259')
     expect(resolveVariable(dark, '--el-color-warning-light-3')).toBe('#a7982d')
     expect(resolveVariable(dark, '--el-color-danger-light-3')).toBe('#b84450')
@@ -141,26 +163,70 @@ describe('AirCAS compiled theme', () => {
     }
   })
 
-  it('keeps the muted primary fill local to solid buttons', () => {
-    const dark = rootVariables(true)
+  it('preserves the solid primary button state colors', () => {
+    rootVariables(true)
     const button = document.createElement('button')
     button.className = 'el-button el-button--primary'
     document.body.append(button)
-    const matchingValues = () =>
+    const variables = Object.fromEntries(
       rules
         .filter((rule) => button.matches(rule.selectorText))
         .flatMap(declarations)
-        .filter(([name]) => name === '--el-button-bg-color')
-        .map(([, value]) =>
-          value.replace(/var\(\s*(--[\w-]+)\s*\)/g, (_, name: string) =>
-            resolveVariable(dark, name)
-          )
-        )
-    expect(matchingValues()).toContain('#126681')
-    button.classList.add('is-link')
-    expect(matchingValues()).not.toContain('#126681')
+    )
+    expect(resolveVariable(variables, '--el-button-bg-color')).toBe('#126681')
+    expect(resolveVariable(variables, '--el-button-hover-bg-color')).toBe(
+      '#197f9e'
+    )
+    expect(resolveVariable(variables, '--el-button-active-bg-color')).toBe(
+      '#093d7e'
+    )
+    for (const state of ['', '-hover', '-active']) {
+      expect(
+        resolveVariable(variables, `--el-button${state}-border-color`)
+      ).toBe(resolveVariable(variables, `--el-button${state}-bg-color`))
+    }
     button.remove()
   })
+
+  it.each(['plain', 'text', 'link', 'dashed'])(
+    'keeps solid primary button color overrides out of %s buttons',
+    (variant) => {
+      rootVariables(true)
+      const button = document.createElement('button')
+      button.className = `el-button el-button--primary is-${variant}`
+      document.body.append(button)
+      const colors = rules
+        .filter((rule) => button.matches(rule.selectorText))
+        .flatMap(declarations)
+        .filter(([name]) => name.startsWith('--el-button-'))
+      button.remove()
+      expect(colors).toEqual([])
+    }
+  )
+
+  it.each(['primary', 'success', 'warning', 'danger', 'info'])(
+    'keeps readable hover and active text on plain %s buttons',
+    (type) => {
+      const dark = rootVariables(true)
+      const button = document.createElement('button')
+      button.className = `el-button el-button--${type} is-plain`
+      document.body.append(button)
+      const variables = {
+        ...dark,
+        ...Object.fromEntries(
+          [...officialRules, ...rules]
+            .filter((rule) => button.matches(rule.selectorText))
+            .flatMap(declarations)
+        ),
+      }
+      button.remove()
+      for (const state of ['hover', 'active']) {
+        expect(
+          resolveVariable(variables, `--el-button-${state}-text-color`)
+        ).toBe(type === 'primary' ? '#ffffff' : '#00122c')
+      }
+    }
+  )
 
   it('retains light visual colors and shared typography, sizing and radii', () => {
     const light = rootVariables(false)

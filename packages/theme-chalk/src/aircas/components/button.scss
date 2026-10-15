@@ -18,9 +18,11 @@
     --el-button-active-border-color: var(--el-button-active-bg-color);
   }
 
-  // Native plain hover fills are bright semantic colors and need dark text.
-  :root.dark .el-button--#{$type}.is-plain {
-    --el-button-hover-text-color: var(--el-bg-color);
-    --el-button-active-text-color: var(--el-bg-color);
+  // Primary uses native white text; the brighter semantic fills need dark text.
+  @if $type != 'primary' {
+    :root.dark .el-button--#{$type}.is-plain {
+      --el-button-hover-text-color: var(--el-bg-color);
+      --el-button-active-text-color: var(--el-bg-color);
+    }
   }
 }

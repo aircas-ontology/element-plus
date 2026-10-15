@@ -47,8 +47,8 @@ $dark: (
   'color-white': #ffffff,
   'color-black': #000000,
   // Native controls use primary for focus, links, selection and loading.
-  // The darker primary button fill belongs to color-special, not this token.
-  'color-primary': #00c4e5,
+  // Solid primary button state overrides remain in color-special.
+  'color-primary': #126681,
   'color-success': #21d36a,
   'color-warning': #e2c626,
   'color-danger': #eb5058,
@@ -85,7 +85,7 @@ $dark: (
   'mask-color-extra-light': #00071466,
 );
 
-// Retain the designed semantic ramps. Primary is derived from its cyan base.
+// Retain the designed semantic ramps. Primary is derived from its brand color.
 $dark-scales: (
   'success': (
     'light-3': #279259,
