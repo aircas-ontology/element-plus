@@ -1,0 +1,9 @@
+:root.dark .el-card {
+  --el-card-bg-color: var(--el-bg-color);
+  --el-card-border-color: var(--el-border-color);
+  color: var(--el-text-color-regular);
+}
+
+:root.dark .el-card__header {
+  border-bottom-color: var(--el-border-color-lighter);
+}

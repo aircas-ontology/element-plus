@@ -1,0 +1,14 @@
+:root.dark .el-form-item__label {
+  color: var(--el-text-color-secondary);
+}
+
+// Validation takes precedence over cyan focus without changing the border shape.
+:root.dark .el-form-item.is-error {
+  .el-input:not(.is-disabled) .el-input__wrapper,
+  .el-textarea:not(.is-disabled) .el-textarea__inner,
+  .el-select__wrapper:not(.is-disabled),
+  .el-input-tag:not(.is-disabled),
+  .el-range-editor:not(.is-disabled) {
+    box-shadow: 0 0 0 1px var(--el-color-danger) inset;
+  }
+}

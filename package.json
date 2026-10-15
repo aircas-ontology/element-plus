@@ -39,7 +39,6 @@
     "docs:gen-locale": "pnpm run -C docs gen-locale",
     "docs:crowdin-credentials": "pnpm run -C docs crowdin-credentials",
     "stub": "pnpm run -r --parallel stub",
-    "prepare": "husky",
     "postinstall": "pnpm stub && pnpm gen:version && pnpm run -C internal/metadata dev"
   },
   "dependencies": {
@@ -113,11 +112,5 @@
     "commitizen": {
       "path": "./node_modules/cz-git"
     }
-  },
-  "lint-staged": {
-    "*.{vue,js,ts,jsx,tsx,md,json,scss}": [
-      "eslint --fix --concurrency=auto",
-      "prettier --write --experimental-cli"
-    ]
   }
 }

@@ -1,0 +1,5 @@
+:root.dark .el-notification {
+  --el-notification-border-color: var(--el-border-color);
+  // There is no consumed notification background variable in the native CSS.
+  background-color: var(--el-bg-color);
+}

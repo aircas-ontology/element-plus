@@ -1,6 +1,30 @@
-// Preserve the existing light wrapper background; dark uses native fill/state colors.
+@use '../common/color-special';
+
+// Preserve the existing light wrapper background and control height.
 :root:not(.dark) .el-select .el-select__wrapper {
   background-color: var(--el-bg-color);
+}
+
+// The wrapper and options read global colors directly, without local variables.
+:root.dark .el-select__wrapper.is-focused:not(.is-disabled) {
+  box-shadow: 0 0 0 1px color-special.$accent inset;
+}
+
+:root.dark .el-select-dropdown__item.is-selected:not(.is-disabled) {
+  background-color: color-special.$selected-bg;
+  color: var(--el-text-color-primary);
+
+  &::after {
+    background-color: var(--el-text-color-primary);
+  }
+}
+
+:root.dark .el-select-dropdown__item.is-hovering:not(.is-disabled) {
+  background-color: color-special.$select-hover-bg;
+}
+
+:root.dark .el-select-dropdown__item.is-disabled {
+  color: var(--el-text-color-disabled);
 }
 
 .el-select:not(.el-select--large, .el-select--small) .el-select__wrapper {

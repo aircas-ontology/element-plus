@@ -1,0 +1,15 @@
+@use '../common/color-special';
+
+:root.dark .el-tree {
+  --el-tree-node-hover-bg-color: #{color-special.$tree-hover-bg};
+  --el-tree-expand-icon-color: #{color-special.$tree-expand-color};
+  background-color: transparent;
+}
+
+:root.dark
+  .el-tree--highlight-current
+  .el-tree-node.is-current
+  > .el-tree-node__content {
+  background-color: color-special.$selected-bg;
+  color: var(--el-text-color-primary);
+}

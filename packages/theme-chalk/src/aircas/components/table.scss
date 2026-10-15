@@ -13,10 +13,24 @@
 }
 
 // Table headers need a distinct blue surface; native table variables are local.
-// Body, borders, stripes, hover and selection retain the official inheritance.
 :root.dark .el-table,
 :root.dark .el-table-v2 {
   @each $name, $value in color-special.$table {
     --el-table-#{$name}: #{$value};
   }
+}
+
+:root.dark .el-table {
+  --el-table-row-hover-bg-color: #{color-special.$table-hover-bg};
+  --el-table-current-row-bg-color: #{color-special.$selected-bg};
+}
+
+// Restrict the stripe color to idle cells: native hover/current-row rules win.
+// Avoid overriding a shared fill token inherited by components inside cells.
+:root.dark
+  .el-table--striped
+  .el-table__body
+  tr.el-table__row--striped:not(.current-row):not(.hover-row):not(:hover)
+  > td.el-table__cell:not(.hover-cell) {
+  background-color: color-special.$table-striped-bg;
 }

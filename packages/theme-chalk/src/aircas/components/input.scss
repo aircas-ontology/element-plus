@@ -1,6 +1,19 @@
-// Background, focus, disabled and validation colors inherit native variables.
+@use '../common/color-special';
+
+// Preserve native geometry and validation while changing the focus color.
 .el-input:not(.el-input--large, .el-input--small) {
   --el-input-height: var(--aircas-size-control);
+}
+
+:root.dark .el-input,
+:root.dark .el-textarea,
+:root.dark .el-date-editor {
+  --el-input-focus-border-color: #{color-special.$accent};
+}
+
+// InputTag draws its focus with a global primary value, not a local variable.
+:root.dark .el-input-tag.is-focused:not(.is-disabled) {
+  box-shadow: 0 0 0 1px color-special.$accent inset;
 }
 
 // Dark-effect poppers replace fill-color-blank locally even in light mode.

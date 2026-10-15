@@ -1,0 +1,40 @@
+@use '../common/color-special';
+
+:root.dark .el-tabs__item:not(.is-disabled) {
+  color: var(--el-text-color-secondary);
+}
+
+:root.dark .el-tabs__item.is-active:not(.is-disabled),
+:root.dark .el-tabs__item:not(.is-disabled):hover,
+:root.dark
+  .el-tabs--border-card
+  > .el-tabs__header
+  .el-tabs__item:not(.is-disabled):hover {
+  color: color-special.$accent;
+}
+
+:root.dark .el-tabs--border-card {
+  background-color: var(--el-bg-color);
+}
+
+:root.dark .el-tabs--border-card > .el-tabs__header {
+  background-color: color-special.$text-button-bg;
+}
+
+:root.dark .el-tabs--card > .el-tabs__header .el-tabs__nav,
+:root.dark .el-tabs--card > .el-tabs__header .el-tabs__item {
+  border-color: var(--el-border-color);
+}
+
+:root.dark
+  .el-tabs--card
+  > .el-tabs__header
+  .el-tabs__item.is-active:not(.is-disabled),
+:root.dark
+  .el-tabs--border-card
+  > .el-tabs__header
+  .el-tabs__item.is-active:not(.is-disabled) {
+  background-color: color-special.$selected-bg;
+  border-color: var(--el-border-color);
+  color: var(--el-text-color-primary);
+}

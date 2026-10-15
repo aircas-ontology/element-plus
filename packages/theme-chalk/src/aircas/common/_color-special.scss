@@ -1,30 +1,80 @@
 // Only differences that native global colors cannot express belong here.
 // Map keys match existing --el-button-* and --el-table-* variable suffixes.
+$accent: #00c4e5;
+$selected-bg: #093d7e;
+$text-button-bg: #042551;
+$button-hover-bg: #123c61;
+$select-hover-bg: #10395b;
+$date-inrange-bg: #093855;
+$input-number-bg: #174968;
+$switch-on: #13bf7d;
+$slider-runway-bg: #12314c;
+
+$menu-hover-bg: #062b47;
+$tree-hover-bg: #0a2b47;
+$tree-expand-color: #90abc1;
+$tag-bg: #08304a;
+$tag-border: #135470;
+$link-hover-color: #75e4f5;
+
+$popper-border: #24526b;
+$table-hover-bg: #0a2d48;
+$table-striped-bg: #01182f;
+$message-info-border: #29445e;
+$alert-info-bg: #223147;
+$descriptions-label-bg: #07243e;
+
+$progress-track-bg: #11314a;
+$calendar-hover-bg: #0b2f4a;
+$step-wait-color: #688198;
+$step-wait-border: #42617d;
+$upload-border: #19506a;
+$skeleton-bg: #0a2841;
+$skeleton-to-bg: #123d56;
+$loading-mask: #000e24d1;
+$scrollbar-bg: #285673;
+$timeline-border: #23465b;
+
 $button: (
   'primary': (
     'bg-color': #126681,
     'hover-bg-color': #197f9e,
     'active-bg-color': #093d7e,
+    'border-color': #126681,
+    'hover-border-color': #197f9e,
+    'active-border-color': #197f9e,
   ),
   'success': (
     'bg-color': #145c39,
     'hover-bg-color': #19764a,
     'active-bg-color': #104c32,
+    'border-color': #187747,
+    'hover-border-color': var(--el-color-success-light-3),
+    'active-border-color': var(--el-color-success-light-5),
   ),
   'warning': (
     'bg-color': #705b16,
     'hover-bg-color': #897122,
     'active-bg-color': #594916,
+    'border-color': #907520,
+    'hover-border-color': var(--el-color-warning-light-3),
+    'active-border-color': var(--el-color-warning-light-5),
   ),
   'danger': (
     'bg-color': #a63541,
     'hover-bg-color': #bf414d,
     'active-bg-color': #852b37,
+    'border-color': #b8434e,
+    'hover-border-color': var(--el-color-danger-light-3),
+    'active-border-color': var(--el-color-danger-light-5),
   ),
   'info': (
     'bg-color': #263d59,
     'hover-bg-color': #35516d,
     'active-bg-color': #1c304a,
+    'border-color': #35516d,
+    'hover-border-color': var(--el-color-info-light-5),
+    'active-border-color': var(--el-color-info-light-7),
   ),
 );
 

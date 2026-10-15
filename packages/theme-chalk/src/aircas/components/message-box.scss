@@ -4,3 +4,9 @@
 :root.dark .el-message-box__header {
   background-color: color-special.$dialog-header-background;
 }
+
+:root.dark
+  .el-message-box__headerbtn:not(:hover):not(:focus)
+  .el-message-box__close {
+  color: var(--el-text-color-primary);
+}

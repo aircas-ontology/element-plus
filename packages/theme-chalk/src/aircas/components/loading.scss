@@ -1,0 +1,14 @@
+@use '../common/color-special';
+
+:root.dark .el-loading-mask {
+  --el-mask-color: #{color-special.$loading-mask};
+}
+
+:root.dark .el-loading-spinner .path {
+  stroke: color-special.$accent;
+}
+
+:root.dark .el-loading-spinner .el-loading-text,
+:root.dark .el-loading-spinner i {
+  color: color-special.$accent;
+}

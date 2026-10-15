@@ -13,9 +13,6 @@
     @each $name, $value in $colors {
       --el-button-#{$name}: #{$value};
     }
-    --el-button-border-color: var(--el-button-bg-color);
-    --el-button-hover-border-color: var(--el-button-hover-bg-color);
-    --el-button-active-border-color: var(--el-button-active-bg-color);
   }
 
   // Primary uses native white text; the brighter semantic fills need dark text.
@@ -25,4 +22,33 @@
       --el-button-active-text-color: var(--el-bg-color);
     }
   }
+}
+
+:root.dark
+  .el-button:not(
+    .el-button--primary,
+    .el-button--success,
+    .el-button--warning,
+    .el-button--danger,
+    .el-button--info,
+    .is-plain,
+    .is-text,
+    .is-link,
+    .is-dashed
+  ) {
+  --el-button-bg-color: #{color-special.$text-button-bg};
+  --el-button-text-color: var(--el-text-color-regular);
+  --el-button-hover-bg-color: #{color-special.$button-hover-bg};
+  --el-button-hover-text-color: var(--el-text-color-primary);
+  --el-button-hover-border-color: var(--el-color-primary-light-3);
+  --el-button-active-bg-color: #{color-special.$selected-bg};
+  --el-button-active-border-color: var(--el-color-primary-light-3);
+}
+
+:root.dark .el-button--primary:is(.is-plain, .is-text, .is-link) {
+  --el-button-text-color: #{color-special.$accent};
+}
+
+:root.dark .el-button.is-link:not(.is-disabled):hover {
+  color: var(--el-text-color-primary);
 }

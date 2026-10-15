@@ -1,0 +1,15 @@
+@use '../common/color-special';
+
+:root.dark .el-calendar {
+  --el-calendar-selected-bg-color: #{color-special.$selected-bg};
+}
+
+// Keep the existing border widths, including the range calendar's hidden edges.
+:root.dark .el-calendar__header,
+:root.dark .el-calendar-table td {
+  border-color: var(--el-border-color);
+}
+
+:root.dark .el-calendar-table .el-calendar-day:hover {
+  background-color: color-special.$calendar-hover-bg;
+}

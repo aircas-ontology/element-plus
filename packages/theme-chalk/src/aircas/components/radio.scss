@@ -1,0 +1,21 @@
+@use '../common/color-special';
+
+:root.dark .el-radio {
+  --el-radio-input-border-color-hover: #{color-special.$accent};
+}
+
+// Checked radio colors are compiled from Sass maps; no local CSS variables exist.
+:root.dark .el-radio__input.is-checked:not(.is-disabled) {
+  .el-radio__inner {
+    background-color: var(--el-bg-color);
+    border-color: color-special.$accent;
+
+    &::after {
+      background-color: color-special.$accent;
+    }
+  }
+
+  + .el-radio__label {
+    color: var(--el-text-color-regular);
+  }
+}

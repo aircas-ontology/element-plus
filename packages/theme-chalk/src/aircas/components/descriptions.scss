@@ -1,0 +1,10 @@
+@use '../common/color-special';
+
+:root.dark .el-descriptions {
+  --el-descriptions-table-border: 1px solid var(--el-border-color);
+  --el-descriptions-item-bordered-label-background: #{color-special.$descriptions-label-bg};
+}
+
+:root.dark .el-descriptions__label.el-descriptions__cell.is-bordered-label {
+  color: var(--el-text-color-secondary);
+}

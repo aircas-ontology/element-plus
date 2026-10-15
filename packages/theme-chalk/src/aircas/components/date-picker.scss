@@ -1,0 +1,26 @@
+@use '../common/color-special';
+
+// Date tables consume range and hover variables locally; year/month keep their states.
+:root.dark .el-date-table {
+  --el-datepicker-inrange-bg-color: #{color-special.$date-inrange-bg};
+  --el-datepicker-inrange-hover-bg-color: #{color-special.$date-inrange-bg};
+  --el-datepicker-hover-text-color: #{color-special.$accent};
+
+  td.today:not(.current, .selected, .start-date, .end-date, .disabled)
+    .el-date-table-cell__text {
+    color: color-special.$accent;
+  }
+}
+
+:root.dark
+  .el-date-picker:not(.is-disabled)
+  .el-date-picker__header-label:hover,
+:root.dark
+  .el-date-range-picker:not(.is-disabled)
+  .el-date-range-picker__header-label:hover {
+  color: color-special.$accent;
+}
+
+:root.dark .el-time-panel {
+  border-color: var(--el-border-color);
+}

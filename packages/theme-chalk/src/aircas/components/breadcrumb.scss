@@ -1,0 +1,13 @@
+@use '../common/color-special';
+
+:root.dark .el-breadcrumb__inner.is-link,
+:root.dark .el-breadcrumb__inner a {
+  color: var(--el-text-color-regular);
+}
+
+:root.dark
+  .el-breadcrumb__item:not(:last-child)
+  .el-breadcrumb__inner.is-link:hover,
+:root.dark .el-breadcrumb__item:not(:last-child) .el-breadcrumb__inner a:hover {
+  color: color-special.$accent;
+}

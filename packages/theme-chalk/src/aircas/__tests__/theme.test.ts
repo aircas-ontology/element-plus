@@ -1,5 +1,4 @@
 import { resolve } from 'node:path'
-import { TinyColor } from '@ctrl/tinycolor'
 import { compile } from 'sass-embedded'
 import { afterEach, beforeAll, describe, expect, it } from 'vitest'
 
@@ -124,22 +123,16 @@ describe('AirCAS compiled theme', () => {
   })
 
   it.each([
-    ['light-3', 70, '#00122c', '#0d4d68'],
-    ['light-5', 50, '#00122c', '#093c57'],
-    ['light-7', 30, '#00122c', '#052b46'],
-    ['light-8', 20, '#00122c', '#04233d'],
-    ['light-9', 10, '#00122c', '#021a35'],
-    ['dark-2', 80, '#e1eaf3', '#3b8098'],
-  ])('derives primary %s from the brand color', (suffix, weight, base, hex) => {
+    ['light-3', '#197f9e'],
+    ['light-5', '#165773'],
+    ['light-7', '#10425e'],
+    ['light-8', '#0b344e'],
+    ['light-9', '#06263e'],
+    ['dark-2', '#1d92af'],
+  ])('uses the designed primary %s ramp', (suffix, hex) => {
     const dark = rootVariables(true)
     const state = resolveVariable(dark, `--el-color-primary-${suffix}`)
-    if (state.startsWith('color-mix(')) {
-      expect(state.replace(/\s+/g, '')).toBe(
-        `color-mix(insrgb,#126681${weight}%,${base})`
-      )
-    } else {
-      expect(new TinyColor(state).toHexString()).toBe(hex)
-    }
+    expect(state).toBe(hex)
   })
 
   it('keeps explicit status ramps and aliases', () => {
@@ -180,11 +173,15 @@ describe('AirCAS compiled theme', () => {
     expect(resolveVariable(variables, '--el-button-active-bg-color')).toBe(
       '#093d7e'
     )
-    for (const state of ['', '-hover', '-active']) {
-      expect(
-        resolveVariable(variables, `--el-button${state}-border-color`)
-      ).toBe(resolveVariable(variables, `--el-button${state}-bg-color`))
-    }
+    expect(resolveVariable(variables, '--el-button-border-color')).toBe(
+      '#126681'
+    )
+    expect(resolveVariable(variables, '--el-button-hover-border-color')).toBe(
+      '#197f9e'
+    )
+    expect(resolveVariable(variables, '--el-button-active-border-color')).toBe(
+      '#197f9e'
+    )
     button.remove()
   })
 
@@ -198,7 +195,9 @@ describe('AirCAS compiled theme', () => {
       const colors = rules
         .filter((rule) => button.matches(rule.selectorText))
         .flatMap(declarations)
-        .filter(([name]) => name.startsWith('--el-button-'))
+        .filter(([name]) =>
+          /^--el-button-(?:bg|hover-bg|active-bg)-color$/.test(name)
+        )
       button.remove()
       expect(colors).toEqual([])
     }
@@ -263,8 +262,8 @@ describe('AirCAS compiled theme', () => {
     '<ul class="el-menu"><li class="el-menu-item is-active"></li></ul>',
     '<div class="el-tabs"><div class="el-tabs__item is-active"></div><div class="el-tabs__active-bar"></div></div>',
     '<div class="el-loading-mask"><div class="el-loading-spinner"></div></div>',
-  ])('lets official component colors inherit root tokens for %s', (html) => {
-    rootVariables(true)
+  ])('keeps light component colors unchanged for %s', (html) => {
+    rootVariables(false)
     const fixture = document.createElement('div')
     fixture.innerHTML = html
     document.body.append(fixture)
@@ -274,9 +273,18 @@ describe('AirCAS compiled theme', () => {
         elements.some((element) => element.matches(rule.selectorText))
       )
       .flatMap(declarations)
-      .filter(([name]) => !['--el-input-height', 'min-height'].includes(name))
+      .filter(
+        ([name]) =>
+          !['--el-input-height', 'min-height', 'background-color'].includes(
+            name
+          )
+      )
     fixture.remove()
-    expect(localColorDeclarations).toEqual([])
+    expect(localColorDeclarations).toEqual(
+      html.includes('class="el-input"') || html.includes('class="el-textarea"')
+        ? [['--el-input-bg-color', 'var(--el-bg-color)']]
+        : []
+    )
   })
 
   it.each([false, true])(

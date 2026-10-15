@@ -1,0 +1,6 @@
+@use '../common/color-special';
+
+:root.dark .el-backtop {
+  --el-backtop-bg-color: #{color-special.$text-button-bg};
+  --el-backtop-text-color: #{color-special.$accent};
+}

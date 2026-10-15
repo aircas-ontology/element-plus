@@ -1,0 +1,10 @@
+@use '../common/color-special';
+
+:root.dark .el-link.el-link--default {
+  --el-link-hover-text-color: #{color-special.$accent};
+}
+
+:root.dark .el-link.el-link--primary {
+  --el-link-text-color: #{color-special.$accent};
+  --el-link-hover-text-color: #{color-special.$link-hover-color};
+}

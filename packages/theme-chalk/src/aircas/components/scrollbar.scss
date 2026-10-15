@@ -1,0 +1,5 @@
+@use '../common/color-special';
+
+:root.dark .el-scrollbar {
+  --el-scrollbar-bg-color: #{color-special.$scrollbar-bg};
+}

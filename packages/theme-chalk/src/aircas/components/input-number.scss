@@ -1,0 +1,15 @@
+@use '../common/color-special';
+
+// Native increment/decrement colors are compiled from global Sass values.
+:root.dark .el-input-number:not(.is-disabled) {
+  .el-input-number__increase:not(.is-disabled),
+  .el-input-number__decrease:not(.is-disabled) {
+    background-color: color-special.$input-number-bg;
+    color: var(--el-text-color-primary);
+
+    &:hover {
+      background-color: var(--el-color-primary);
+      color: var(--el-color-white);
+    }
+  }
+}

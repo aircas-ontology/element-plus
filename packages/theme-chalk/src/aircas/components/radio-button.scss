@@ -1,0 +1,7 @@
+@use '../common/color-special';
+
+:root.dark .el-radio-button {
+  --el-radio-button-checked-bg-color: #{color-special.$selected-bg};
+  --el-radio-button-checked-border-color: #{color-special.$selected-bg};
+  --el-radio-button-checked-text-color: var(--el-text-color-primary);
+}

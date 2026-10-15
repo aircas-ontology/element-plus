@@ -81,12 +81,20 @@ $dark: (
   'overlay-color': #000714cc,
   'overlay-color-light': #000714b8,
   'overlay-color-lighter': #00071480,
-  'mask-color': #000e24d1,
+  'mask-color': #000714b8,
   'mask-color-extra-light': #00071466,
 );
 
-// Retain the designed semantic ramps. Primary is derived from its brand color.
+// Retain the designed dark ramps; light continues to derive its own states.
 $dark-scales: (
+  'primary': (
+    'light-3': #197f9e,
+    'light-5': #165773,
+    'light-7': #10425e,
+    'light-8': #0b344e,
+    'light-9': #06263e,
+    'dark-2': #1d92af,
+  ),
   'success': (
     'light-3': #279259,
     'light-5': #1b6746,

@@ -1,0 +1,14 @@
+@use 'sass:map';
+@use '../common/color-special';
+
+// Popover initializes its own dark variables rather than using Tooltip's.
+:root.dark .el-popover.el-popper.is-dark {
+  --el-popover-bg-color: #{map.get(color-special.$popper, 'bg-color-dark')};
+  --el-popover-border-color: #{color-special.$popper-border};
+  --el-popover-title-text-color: var(--el-text-color-primary);
+  color: var(--el-text-color-regular);
+}
+
+:root.dark .el-popover.el-popper.is-light {
+  --el-popover-border-color: var(--el-border-color);
+}
