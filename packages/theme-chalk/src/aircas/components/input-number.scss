@@ -1,5 +1,23 @@
 @use '../common/color-special';
 
+// Scope disabled variables to Input Number so other form controls keep their colors.
+:root.dark .el-input-number.is-disabled {
+  --el-disabled-bg-color: #{color-special.$input-number-disabled-bg};
+  --el-disabled-border-color: #{color-special.$input-number-disabled-border};
+  --el-disabled-text-color: #{color-special.$input-number-disabled-text};
+
+  .el-input-number__increase,
+  .el-input-number__decrease {
+    background-color: var(--el-disabled-bg-color);
+
+    // Native disabled controls use the border color for their icons, even on hover.
+    &,
+    &:hover {
+      color: var(--el-disabled-text-color);
+    }
+  }
+}
+
 // Native increment/decrement colors are compiled from global Sass values.
 :root.dark .el-input-number:not(.is-disabled) {
   .el-input-number__increase:not(.is-disabled),
