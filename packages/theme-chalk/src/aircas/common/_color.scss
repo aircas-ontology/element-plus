@@ -1,89 +1,170 @@
 @use 'sass:color';
+@use 'sass:map';
 
-// AirCAS owns these values. Element Plus names are introduced only in variables.scss.
+// Keys match Element Plus CSS variables, without the shared --el- prefix.
+// Keep the existing light colors while removing the intermediate color aliases.
 $light: (
-  'primary': #0758b8,
-  'success': #15803d,
-  'warning': #b45309,
-  'danger': #dc2626,
-  'info': #475569,
-  'white': #ffffff,
-  'black': #000000,
-  'on-accent': #ffffff,
-  'page-background': #f3f8fc,
-  'background': #ffffff,
-  'panel-background': #ffffff,
-  'panel-background-deep': #e7f1f8,
-  'input-background': #ffffff,
-  'section-background': #eaf2f9,
-  'section-header': #dceaf5,
-  'card-background': #ffffff,
-  'text-primary': #10243a,
-  'text-regular': #29465f,
-  'text-secondary': #425c73,
-  'text-disabled': #70869b,
-  'border': #afc4d4,
-  'border-light': #c7d9e7,
-  'hover': #e5f3ff,
-  'active': #cbe6fa,
-  'overlay': #0f172ac7,
-  'overlay-light': #0f172a9e,
-  'overlay-lighter': #0f172a73,
-  'mask': #ffffffe6,
-  'mask-extra-light': #ffffff4d,
+  'color-white': #ffffff,
+  'color-black': #000000,
+  'color-primary': #0758b8,
+  'color-success': #15803d,
+  'color-warning': #b45309,
+  'color-danger': #dc2626,
+  'color-info': #475569,
+  'bg-color': #ffffff,
+  'bg-color-page': #f3f8fc,
+  'bg-color-overlay': #ffffff,
+  'fill-color': #eaf2f9,
+  'fill-color-light': #e5f3ff,
+  'fill-color-lighter': #eaf2f9,
+  'fill-color-extra-light': #e7f1f8,
+  'fill-color-dark': #cbe6fa,
+  'fill-color-darker': #dceaf5,
+  'fill-color-blank': #ffffff,
+  'text-color-primary': #10243a,
+  'text-color-regular': #29465f,
+  'text-color-secondary': #425c73,
+  'text-color-placeholder': #425c73,
+  'text-color-disabled': #70869b,
+  'border-color': #afc4d4,
+  'border-color-light': #c7d9e7,
+  'border-color-lighter': #c7d9e7,
+  'border-color-extra-light': #c7d9e7,
+  'border-color-dark': #afc4d4,
+  'border-color-darker': #afc4d4,
+  'border-color-hover': #0758b8,
+  'disabled-bg-color': #eaf2f9,
+  'disabled-text-color': #70869b,
+  'disabled-border-color': #c7d9e7,
+  'overlay-color': #0f172ac7,
+  'overlay-color-light': #0f172a9e,
+  'overlay-color-lighter': #0f172a73,
+  'mask-color': #ffffffe6,
+  'mask-color-extra-light': #ffffff4d,
 );
 
 $dark: (
-  'primary': #4dd2ff,
-  'success': #4ade80,
-  'warning': #fbbf24,
-  'danger': #f87171,
-  'info': #94a3b8,
-  'white': #ffffff,
-  'black': #000000,
-  'on-accent': #041923,
-  'page-background': #030d16,
-  'background': #0b2230,
-  'panel-background': #0b2230,
-  'panel-background-deep': #071925,
-  'input-background': #0d2938,
-  'section-background': #103445,
-  'section-header': #154457,
-  'card-background': #0b2230,
-  'text-primary': #f2fbff,
-  'text-regular': #d6e9f2,
-  'text-secondary': #b5d5e2,
-  'text-disabled': #7893a3,
-  'border': #2187a8,
-  'border-light': #1b5f79,
-  'hover': #10465b,
-  'active': #145c75,
-  'overlay': #00050fe0,
-  'overlay-light': #00050fc2,
-  'overlay-lighter': #00050fa3,
-  'mask': #ffffffd9,
-  'mask-extra-light': #ffffff3d,
+  'color-white': #ffffff,
+  'color-black': #000000,
+  // Native controls use primary for focus, links, selection and loading.
+  // The darker primary button fill belongs to color-special, not this token.
+  'color-primary': #00c4e5,
+  'color-success': #21d36a,
+  'color-warning': #e2c626,
+  'color-danger': #eb5058,
+  'color-info': #9cacbf,
+  'bg-color': #00122c,
+  'bg-color-page': #000e24,
+  'bg-color-overlay': #001630,
+  'fill-color': #092741,
+  'fill-color-light': #05203b,
+  'fill-color-lighter': #031b33,
+  'fill-color-extra-light': #01172e,
+  'fill-color-dark': #0b324d,
+  'fill-color-darker': #113f59,
+  'fill-color-blank': #00122c,
+  'text-color-primary': #e1eaf3,
+  'text-color-regular': #c4d1de,
+  'text-color-secondary': #8b9fb5,
+  'text-color-placeholder': #7890a8,
+  'text-color-disabled': #596f86,
+  'border-color': #073052,
+  'border-color-light': #082c49,
+  'border-color-lighter': #05233f,
+  'border-color-extra-light': #031c34,
+  'border-color-dark': #124769,
+  'border-color-darker': #1d5779,
+  'border-color-hover': #176586,
+  'disabled-bg-color': #0a2630,
+  'disabled-text-color': #69858f,
+  'disabled-border-color': #0c2c3a,
+  'overlay-color': #000714cc,
+  'overlay-color-light': #000714b8,
+  'overlay-color-lighter': #00071480,
+  'mask-color': #000e24d1,
+  'mask-color-extra-light': #00071466,
 );
 
-@mixin emit($palette) {
-  @each $name, $value in $palette {
-    --aircas-color-#{$name}: #{$value};
+// Retain the designed semantic ramps. Primary is derived from its cyan base.
+$dark-scales: (
+  'success': (
+    'light-3': #279259,
+    'light-5': #1b6746,
+    'light-7': #114936,
+    'light-8': #0c382b,
+    'light-9': #082d25,
+    'dark-2': #49e687,
+  ),
+  'warning': (
+    'light-3': #a7982d,
+    'light-5': #787331,
+    'light-7': #4d512f,
+    'light-8': #3b4029,
+    'light-9': #2b3426,
+    'dark-2': #f0d752,
+  ),
+  'danger': (
+    'light-3': #b84450,
+    'light-5': #843243,
+    'light-7': #5a2539,
+    'light-8': #432033,
+    'light-9': #321b2d,
+    'dark-2': #ff7379,
+  ),
+  'info': (
+    'light-3': #778a9f,
+    'light-5': #516780,
+    'light-7': #354d68,
+    'light-8': #273f59,
+    'light-9': #172d47,
+    'dark-2': #b7c6d9,
+  ),
+);
 
-    @if $name ==
-      'primary' or
-      $name ==
-      'success' or
-      $name ==
-      'warning' or
-      $name ==
-      'danger' or
-      $name ==
-      'info'
-    {
-      --aircas-color-#{$name}-rgb:
-        #{color.channel($value, 'red', $space: rgb)},
-        #{color.channel($value, 'green', $space: rgb)},
-        #{color.channel($value, 'blue', $space: rgb)};
+@mixin emit($palette, $scales: ()) {
+  @each $name, $value in $palette {
+    --el-#{$name}: #{$value};
+  }
+
+  @each $type in (primary, success, warning, danger, info) {
+    $base: map.get($palette, 'color-#{$type}');
+    --el-color-#{$type}-rgb:
+      #{color.channel($base, 'red', $space: rgb)},
+      #{color.channel($base, 'green', $space: rgb)},
+      #{color.channel($base, 'blue', $space: rgb)};
+
+    @each $step in (3, 5, 7, 8, 9) {
+      @if map.has-key($scales, $type, 'light-#{$step}') {
+        --el-color-#{$type}-light-#{$step}: #{map.get(
+            $scales,
+            $type,
+            'light-#{$step}'
+          )};
+      } @else {
+        --el-color-#{$type}-light-#{$step}: color-mix(
+          in srgb,
+          var(--el-color-#{$type}) #{(10 - $step) * 10%},
+          var(--el-bg-color)
+        );
+      }
+    }
+
+    @if map.has-key($scales, $type, 'dark-2') {
+      --el-color-#{$type}-dark-2: #{map.get($scales, $type, 'dark-2')};
+    } @else {
+      --el-color-#{$type}-dark-2: color-mix(
+        in srgb,
+        var(--el-color-#{$type}) 80%,
+        var(--el-text-color-primary)
+      );
     }
   }
+
+  // Error is Element Plus's alias of danger, including its RGB and state ramp.
+  --el-color-error: var(--el-color-danger);
+  --el-color-error-rgb: var(--el-color-danger-rgb);
+  @each $step in (3, 5, 7, 8, 9) {
+    --el-color-error-light-#{$step}: var(--el-color-danger-light-#{$step});
+  }
+  --el-color-error-dark-2: var(--el-color-danger-dark-2);
 }

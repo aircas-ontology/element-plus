@@ -1,0 +1,6 @@
+@use '../common/color-special';
+
+// Element Plus has no variable for the header background. Keep native geometry.
+:root.dark .el-message-box__header {
+  background-color: color-special.$dialog-header-background;
+}

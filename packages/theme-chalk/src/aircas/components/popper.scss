@@ -1,0 +1,15 @@
+@use '../common/color-special';
+
+// Native dark poppers invert bg/text and have no text/border color variables.
+// Only this effect needs an exception; the native arrow uses the same bg token.
+:root.dark .el-popper.is-dark {
+  @each $name, $value in color-special.$popper {
+    --el-popper-#{$name}: #{$value};
+  }
+  color: var(--el-text-color-primary);
+  border-color: var(--el-border-color);
+
+  > .el-popper__arrow::before {
+    border-color: var(--el-border-color);
+  }
+}

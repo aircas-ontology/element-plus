@@ -1,29 +1,26 @@
+@use '../common/color-special';
+
 .el-button:not(.el-button--large, .el-button--small) {
   height: var(--aircas-size-button);
 }
 
-// Dark accent colors are bright enough to require dark foreground text.
-@each $type in (primary, success, warning, danger, info) {
+// Native variants initialize --el-button-* on the button itself, so root
+// overrides cannot supply dark fills independently of bright semantic text.
+// Keep the native state selectors; only replace their existing variables.
+@each $type, $colors in color-special.$button {
   :root.dark
-    .el-button.el-button--#{$type}:not(
-      .is-plain,
-      .is-text,
-      .is-link,
-      .is-dashed
-    ) {
-    --el-button-text-color: var(--aircas-color-on-accent);
-    --el-button-hover-text-color: var(--aircas-color-on-accent);
-    --el-button-active-text-color: var(--aircas-color-on-accent);
-    --el-button-disabled-text-color: var(--aircas-color-on-accent);
-    --el-button-hover-bg-color: color-mix(
-      in srgb,
-      var(--aircas-color-#{$type}) 85%,
-      var(--aircas-color-white)
-    );
+    .el-button--#{$type}:not(.is-plain, .is-text, .is-link, .is-dashed) {
+    @each $name, $value in $colors {
+      --el-button-#{$name}: #{$value};
+    }
+    --el-button-border-color: var(--el-button-bg-color);
+    --el-button-hover-border-color: var(--el-button-hover-bg-color);
+    --el-button-active-border-color: var(--el-button-active-bg-color);
   }
 
-  :root.dark .el-button.el-button--#{$type}.is-plain {
-    --el-button-hover-text-color: var(--aircas-color-on-accent);
-    --el-button-active-text-color: var(--aircas-color-#{$type});
+  // Native plain hover fills are bright semantic colors and need dark text.
+  :root.dark .el-button--#{$type}.is-plain {
+    --el-button-hover-text-color: var(--el-bg-color);
+    --el-button-active-text-color: var(--el-bg-color);
   }
 }

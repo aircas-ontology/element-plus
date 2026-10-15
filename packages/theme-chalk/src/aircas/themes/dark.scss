@@ -7,7 +7,7 @@
 
 :root.dark {
   color-scheme: dark;
-  @include color.emit(color.$dark);
+  @include color.emit(color.$dark, color.$dark-scales);
   @include typography.emit();
   @include size.emit();
   @include spacing.emit();

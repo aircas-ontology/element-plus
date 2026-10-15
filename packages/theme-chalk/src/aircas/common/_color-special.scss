@@ -1,0 +1,41 @@
+// Only differences that native global colors cannot express belong here.
+// Map keys match existing --el-button-* and --el-table-* variable suffixes.
+$button: (
+  'primary': (
+    'bg-color': #126681,
+    'hover-bg-color': #197f9e,
+    'active-bg-color': #093d7e,
+  ),
+  'success': (
+    'bg-color': #145c39,
+    'hover-bg-color': #19764a,
+    'active-bg-color': #104c32,
+  ),
+  'warning': (
+    'bg-color': #705b16,
+    'hover-bg-color': #897122,
+    'active-bg-color': #594916,
+  ),
+  'danger': (
+    'bg-color': #a63541,
+    'hover-bg-color': #bf414d,
+    'active-bg-color': #852b37,
+  ),
+  'info': (
+    'bg-color': #263d59,
+    'hover-bg-color': #35516d,
+    'active-bg-color': #1c304a,
+  ),
+);
+
+$table: (
+  'header-bg-color': #0e5c78,
+  'header-text-color': #d7edf5,
+);
+
+$popper: (
+  'bg-color-dark': #12314c,
+);
+
+// Dialog/MessageBox headers have no native background-color variable.
+$dialog-header-background: #0e5c78;

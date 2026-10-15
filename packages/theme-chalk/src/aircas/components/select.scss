@@ -1,5 +1,6 @@
-.el-select .el-select__wrapper {
-  background-color: var(--aircas-color-input-background);
+// Preserve the existing light wrapper background; dark uses native fill/state colors.
+:root:not(.dark) .el-select .el-select__wrapper {
+  background-color: var(--el-bg-color);
 }
 
 .el-select:not(.el-select--large, .el-select--small) .el-select__wrapper {

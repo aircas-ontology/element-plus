@@ -1,8 +1,11 @@
+// Background, focus, disabled and validation colors inherit native variables.
 .el-input:not(.el-input--large, .el-input--small) {
   --el-input-height: var(--aircas-size-control);
 }
 
-.el-input,
-.el-textarea {
-  --el-input-bg-color: var(--aircas-color-input-background);
+// Dark-effect poppers replace fill-color-blank locally even in light mode.
+// Preserve the existing light input surface when placed inside those poppers.
+:root:not(.dark) .el-input,
+:root:not(.dark) .el-textarea {
+  --el-input-bg-color: var(--el-bg-color);
 }
