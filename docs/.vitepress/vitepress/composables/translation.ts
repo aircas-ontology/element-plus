@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import { useData, useRoute, useRouter, withBase } from 'vitepress'
 import { useStorage } from '@vueuse/core'
-import { PREFERRED_LANG_KEY } from '../constant'
+import { PREFERRED_LANG_KEY, defaultLang } from '../constant'
 import langs from '../../i18n/lang.json'
 import translationLocale from '../../i18n/component/translation.json'
 import { useLang } from './lang'
@@ -38,7 +38,7 @@ export const useTranslation = () => {
     return currentLang === 'zh-CN' ? langsCopy : ['zh-CN'].concat(langsCopy)
   })
 
-  const language = useStorage(PREFERRED_LANG_KEY, 'en-US')
+  const language = useStorage(PREFERRED_LANG_KEY, defaultLang)
 
   const getTargetUrl = (lang: string) => {
     const firstSlash = route.path.indexOf('/', site.value.base.length)

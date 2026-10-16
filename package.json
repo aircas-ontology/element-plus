@@ -33,6 +33,7 @@
     "typecheck:node": "tsc -p tsconfig.node.json --noEmit",
     "typecheck:vite-config": "vue-tsc -p tsconfig.vite-config.json --composite false --noEmit",
     "typecheck:vitest": "vue-tsc -p tsconfig.vitest.json --composite false --noEmit",
+    "docs:sync-zh": "tsx scripts/pull-docs-i18n.ts",
     "docs:dev": "pnpm run -C docs dev",
     "docs:build": "pnpm run -C docs build",
     "docs:serve": "pnpm run -C docs serve",

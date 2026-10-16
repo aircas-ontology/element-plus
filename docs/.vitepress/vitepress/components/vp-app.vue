@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, watch } from 'vue'
+import { useData, useRoute, useRouter } from 'vitepress'
 // import { ElMessageBox } from 'element-plus'
 // import dayjs from 'dayjs'
-import { isClient, useEventListener, useToggle } from '@vueuse/core'
+import { isClient, useEventListener, useStorage, useToggle } from '@vueuse/core'
 import { EVENT_CODE } from 'element-plus'
 import { useSidebar } from '../composables/sidebar'
 import { useToggleWidgets } from '../composables/toggle-widgets'
 // import { useLang } from '../composables/lang'
-import { breakpoints } from '../constant'
+import { PREFERRED_LANG_KEY, breakpoints, defaultLang } from '../constant'
+import { getLanguageHomeRedirect } from '../utils/language'
 import VPOverlay from './vp-overlay.vue'
 import VPSkipLink from './vp-skip-link.vue'
 import VPNav from './vp-nav.vue'
@@ -19,6 +21,27 @@ import VPSponsors from './vp-sponsors.vue'
 // const USER_PREFER_GITHUB_PAGE = 'USER_PREFER_GITHUB_PAGE'
 const [isSidebarOpen, toggleSidebar] = useToggle(false)
 const { hasSidebar } = useSidebar()
+const route = useRoute()
+const router = useRouter()
+const { site, theme } = useData()
+const preferredLanguage = useStorage(PREFERRED_LANG_KEY, defaultLang)
+
+onMounted(() => {
+  watch(
+    () => route.path,
+    (path) => {
+      const target = getLanguageHomeRedirect(
+        path,
+        site.value.base,
+        preferredLanguage.value,
+        theme.value.langs
+      )
+      if (target)
+        router.go(target + window.location.search + window.location.hash)
+    },
+    { immediate: true }
+  )
+})
 // const lang = useLang()
 
 // const mirrorUrl = 'element-plus.gitee.io'

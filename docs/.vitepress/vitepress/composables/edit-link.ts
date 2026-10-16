@@ -2,7 +2,6 @@ import { computed } from 'vue'
 import { useData } from 'vitepress'
 import { useLang } from '../composables/lang'
 import { useLocale } from '../composables/locale'
-import { defaultLang } from '../constant'
 import { createCrowdinUrl, createGitHubUrl } from '../utils'
 import editLinkLocale from '../../i18n/component/edit-link.json'
 
@@ -12,7 +11,7 @@ export function useEditLink() {
   const editLink = useLocale(editLinkLocale)
 
   const canEditSource = computed(() => {
-    return lang.value === defaultLang
+    return lang.value === 'en-US'
   })
 
   const url = computed(() => {

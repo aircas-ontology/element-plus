@@ -1,0 +1,14 @@
+{
+  "basic-usage": "basic-usage",
+  "horizontal-mode": "horizontal-mode",
+  "scroll-container": "scroll-container",
+  "anchor-api": "anchor-api",
+  "anchor-attributes": "anchor-attributes",
+  "anchor-events": "anchor-events",
+  "Basic Usage": "基础用法",
+  "Horizontal Mode": "横向模式",
+  "Scroll Container": "滚动容器",
+  "Anchor API": "Anchor API",
+  "Anchor Attributes": "Anchor 属性",
+  "Anchor Events": "Anchor 事件"
+}
