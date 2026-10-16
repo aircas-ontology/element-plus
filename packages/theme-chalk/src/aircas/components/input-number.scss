@@ -6,8 +6,14 @@
   --el-disabled-border-color: #{color-special.$input-number-disabled-border};
   --el-disabled-text-color: #{color-special.$input-number-disabled-text};
 
+  // The input outline uses an inset shadow; controls use native borders.
+  .el-input__wrapper {
+    box-shadow: none;
+  }
+
   .el-input-number__increase,
   .el-input-number__decrease {
+    border: none;
     background-color: var(--el-disabled-bg-color);
 
     // Native disabled controls use the border color for their icons, even on hover.

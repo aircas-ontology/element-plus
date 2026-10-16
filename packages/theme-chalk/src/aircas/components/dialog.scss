@@ -1,8 +1,37 @@
 @use '../common/color-special';
 
-// Element Plus has no variable for the header background. Keep native geometry.
-:root.dark .el-dialog__header {
-  background-color: color-special.$dialog-header-background;
+// Match MessageBox section spacing without clipping custom dialog content.
+:root.dark .el-dialog {
+  padding: 0;
+
+  .el-dialog__header {
+    position: relative;
+    min-height: 40px;
+    box-sizing: border-box;
+    padding: var(--aircas-space-2) var(--aircas-space-4);
+    border-top-left-radius: inherit;
+    border-top-right-radius: inherit;
+    background-color: color-special.$dialog-header-background;
+
+    &.show-close {
+      padding-right: calc(40px + var(--aircas-space-2));
+    }
+  }
+
+  .el-dialog__headerbtn {
+    top: 0;
+    right: var(--aircas-space-1);
+    width: 40px;
+    height: 40px;
+  }
+
+  .el-dialog__body {
+    padding: var(--aircas-space-4);
+  }
+
+  .el-dialog__footer {
+    padding: var(--aircas-space-2) var(--aircas-space-4) var(--aircas-space-4);
+  }
 }
 
 :root.dark .el-dialog__headerbtn:not(:hover):not(:focus) .el-dialog__close {

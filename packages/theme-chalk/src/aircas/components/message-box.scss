@@ -1,8 +1,31 @@
 @use '../common/color-special';
 
-// Element Plus has no variable for the header background. Keep native geometry.
-:root.dark .el-message-box__header {
-  background-color: color-special.$dialog-header-background;
+// Give each section its own spacing so the header background fills the top.
+:root.dark .el-message-box {
+  padding: 0;
+
+  .el-message-box__header {
+    position: relative;
+    padding: var(--aircas-space-2) var(--aircas-space-4);
+    background-color: color-special.$dialog-header-background;
+
+    &.show-close {
+      padding-right: calc(40px + var(--aircas-space-2));
+    }
+  }
+
+  .el-message-box__headerbtn {
+    top: 0;
+    right: var(--aircas-space-1);
+  }
+
+  .el-message-box__content {
+    padding: var(--aircas-space-4);
+  }
+
+  .el-message-box__btns {
+    padding: var(--aircas-space-2) var(--aircas-space-4) var(--aircas-space-4);
+  }
 }
 
 :root.dark
