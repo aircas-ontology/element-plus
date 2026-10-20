@@ -1,13 +1,29 @@
-@use '../common/color-special';
-
-:root.dark .el-alert--info.is-light {
-  --el-alert-bg-color: #{color-special.$alert-info-bg};
-}
-
 // Text only: preserve semantic icons and the white text of dark effects.
 :root.dark .el-alert.is-light {
   .el-alert__title,
   .el-alert__description {
     color: var(--el-text-color-regular);
   }
+}
+
+// Bright semantic dark effects need black content instead of native white text.
+:root.dark
+  .el-alert:is(
+    .el-alert--success,
+    .el-alert--warning,
+    .el-alert--info,
+    .el-alert--error
+  ).is-dark {
+  color: var(--el-color-black);
+
+  .el-alert__description {
+    color: inherit;
+  }
+}
+
+// The close icon must still turn danger even on a danger-colored alert. Give
+// its SVG a small dark silhouette without adding a background or another color.
+:root.dark .el-alert.is-dark .el-alert__close-btn {
+  filter: drop-shadow(1px 0 0 var(--el-color-black))
+    drop-shadow(-1px 0 0 var(--el-color-black));
 }

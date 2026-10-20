@@ -1,17 +1,16 @@
-@use '../common/color-special';
-
+// Native Radio initializes its hover variable locally.
 :root.dark .el-radio {
-  --el-radio-input-border-color-hover: #{color-special.$accent};
+  --el-radio-input-border-color-hover: var(--el-border-color-hover);
 }
 
 // Checked radio colors are compiled from Sass maps; no local CSS variables exist.
 :root.dark .el-radio__input.is-checked:not(.is-disabled) {
   .el-radio__inner {
     background-color: var(--el-bg-color);
-    border-color: color-special.$accent;
+    border-color: var(--el-border-color-hover);
 
     &::after {
-      background-color: color-special.$accent;
+      background-color: var(--el-border-color-hover);
     }
   }
 

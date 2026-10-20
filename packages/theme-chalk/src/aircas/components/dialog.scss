@@ -1,3 +1,4 @@
+@use 'sass:map';
 @use '../common/color-special';
 
 // Match MessageBox section spacing without clipping custom dialog content.
@@ -11,7 +12,7 @@
     padding: var(--aircas-space-2) var(--aircas-space-4);
     border-top-left-radius: inherit;
     border-top-right-radius: inherit;
-    background-color: color-special.$dialog-header-background;
+    background-color: map.get(color-special.$table, 'header-bg-color');
 
     &.show-close {
       padding-right: calc(40px + var(--aircas-space-2));
@@ -32,8 +33,4 @@
   .el-dialog__footer {
     padding: var(--aircas-space-2) var(--aircas-space-4) var(--aircas-space-4);
   }
-}
-
-:root.dark .el-dialog__headerbtn:not(:hover):not(:focus) .el-dialog__close {
-  color: var(--el-text-color-primary);
 }

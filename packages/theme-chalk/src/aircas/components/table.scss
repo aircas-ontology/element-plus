@@ -18,11 +18,17 @@
   @each $name, $value in color-special.$table {
     --el-table-#{$name}: #{$value};
   }
+  --el-table-header-text-color: var(--el-text-color-primary);
 }
 
 :root.dark .el-table {
-  --el-table-row-hover-bg-color: #{color-special.$table-hover-bg};
-  --el-table-current-row-bg-color: #{color-special.$selected-bg};
+  --el-table-current-row-bg-color: var(--el-fill-color-darker);
+}
+
+// Native hover-row and hover-cell rules otherwise replace the current-row
+// background, including striped rows and cells belonging to fixed columns.
+:root.dark .el-table .el-table__body tr.current-row > td.el-table__cell {
+  background-color: var(--el-table-current-row-bg-color);
 }
 
 // Restrict the stripe color to idle cells: native hover/current-row rules win.
@@ -32,5 +38,5 @@
   .el-table__body
   tr.el-table__row--striped:not(.current-row):not(.hover-row):not(:hover)
   > td.el-table__cell:not(.hover-cell) {
-  background-color: color-special.$table-striped-bg;
+  background-color: var(--el-bg-color-overlay);
 }

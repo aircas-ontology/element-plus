@@ -1,6 +1,4 @@
-@use '../common/color-special';
-
+// Native default text uses the dark primary, so keep the cyan action indicator.
 :root.dark .el-backtop {
-  --el-backtop-bg-color: #{color-special.$text-button-bg};
-  --el-backtop-text-color: #{color-special.$accent};
+  --el-backtop-text-color: var(--el-border-color-hover);
 }

@@ -1,0 +1,45 @@
+// Native close controls use different tokens or hard-coded primary hover rules.
+// Keep their geometry while sharing a transparent, danger-colored interaction.
+:root.dark {
+  :is(
+    .el-dialog .el-dialog__headerbtn,
+    .el-message-box .el-message-box__headerbtn,
+    .el-drawer .el-drawer__close-btn,
+    .el-notification .el-notification__closeBtn,
+    .el-message .el-message__closeBtn,
+    .el-alert .el-alert__close-btn,
+    .el-tour .el-tour__closebtn
+  ) {
+    color: var(--el-text-color-primary);
+    background-color: transparent;
+    transition: color var(--el-transition-duration-fast);
+
+    .el-icon,
+    .el-dialog__close,
+    .el-message-box__close,
+    .el-tour__close {
+      color: inherit;
+      transition: color var(--el-transition-duration-fast);
+    }
+
+    &:hover,
+    &:focus {
+      color: var(--el-color-danger);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--el-color-danger);
+      outline-offset: 2px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      &,
+      .el-icon,
+      .el-dialog__close,
+      .el-message-box__close,
+      .el-tour__close {
+        transition: none;
+      }
+    }
+  }
+}

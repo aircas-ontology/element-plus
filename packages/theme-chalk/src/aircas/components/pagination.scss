@@ -1,9 +1,8 @@
-@use '../common/color-special';
-
+// Pagination reinitializes its surfaces and primary text on the component.
 :root.dark .el-pagination {
   --el-pagination-bg-color: var(--el-bg-color);
   --el-pagination-button-bg-color: var(--el-bg-color);
   --el-pagination-button-color: var(--el-text-color-regular);
   --el-pagination-button-disabled-bg-color: var(--el-bg-color);
-  --el-pagination-hover-color: #{color-special.$accent};
+  --el-pagination-hover-color: var(--el-border-color-hover);
 }

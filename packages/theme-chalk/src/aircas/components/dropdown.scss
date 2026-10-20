@@ -1,12 +1,11 @@
-@use '../common/color-special';
-
+// Dropdown initializes its hover variables from primary tints locally.
 :root.dark .el-dropdown,
 :root.dark .el-dropdown__popper {
-  --el-dropdown-menuItem-hover-fill: #{color-special.$selected-bg};
+  --el-dropdown-menuItem-hover-fill: var(--el-fill-color-light);
   --el-dropdown-menuItem-hover-color: var(--el-text-color-primary);
 }
 
-// Dropdown's picker mixin initializes the panel and arrow border separately.
+// The picker mixin initializes the panel and arrow border separately.
 :root.dark .el-dropdown__popper {
   border-color: var(--el-border-color);
 

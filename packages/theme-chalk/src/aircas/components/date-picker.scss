@@ -1,26 +1,35 @@
-@use '../common/color-special';
+// DatePicker initializes its range and text variables on the panel itself.
+:root.dark .el-picker-panel {
+  --el-datepicker-inrange-bg-color: var(--el-fill-color-light);
+  --el-datepicker-inrange-hover-bg-color: var(--el-fill-color-light);
+  --el-datepicker-hover-text-color: var(--el-text-color-primary);
+}
 
-// Date tables consume range and hover variables locally; year/month keep their states.
-:root.dark .el-date-table {
-  --el-datepicker-inrange-bg-color: #{color-special.$date-inrange-bg};
-  --el-datepicker-inrange-hover-bg-color: #{color-special.$date-inrange-bg};
-  --el-datepicker-hover-text-color: #{color-special.$accent};
+// Native date/month/year hover changes only text. Highlight available cells
+// without replacing selected endpoints or disabled backgrounds.
+:root.dark :is(.el-date-table, .el-month-table, .el-year-table) {
+  td:not(.current, .selected, .start-date, .end-date, .disabled, .week):hover
+    .el-date-table-cell__text {
+    background-color: var(--el-fill-color-light);
+  }
 
   td.today:not(.current, .selected, .start-date, .end-date, .disabled)
     .el-date-table-cell__text {
-    color: color-special.$accent;
+    color: var(--el-border-color-hover);
   }
 }
 
+// Header navigation also uses the dark primary base directly in native styles.
 :root.dark
-  .el-date-picker:not(.is-disabled)
-  .el-date-picker__header-label:hover,
-:root.dark
-  .el-date-range-picker:not(.is-disabled)
-  .el-date-range-picker__header-label:hover {
-  color: color-special.$accent;
+  :is(.el-date-picker, .el-date-range-picker):not(.is-disabled)
+  :is(
+    .el-date-picker__header-label,
+    .el-date-range-picker__header-label
+  ):hover {
+  color: var(--el-border-color-hover);
 }
 
+// The native time panel uses a weaker border than other dark popovers.
 :root.dark .el-time-panel {
   border-color: var(--el-border-color);
 }

@@ -1,15 +1,32 @@
-@use '../common/color-special';
-
+// Transparent tree surfaces preserve their surrounding panel background.
 :root.dark .el-tree {
-  --el-tree-node-hover-bg-color: #{color-special.$tree-hover-bg};
-  --el-tree-expand-icon-color: #{color-special.$tree-expand-color};
   background-color: transparent;
 }
 
+// Native current nodes use a primary tint, independently of the hover fill.
 :root.dark
   .el-tree--highlight-current
-  .el-tree-node.is-current
+  .el-tree-node.is-current:not([aria-disabled='true'])
   > .el-tree-node__content {
-  background-color: color-special.$selected-bg;
+  background-color: var(--el-fill-color-darker);
   color: var(--el-text-color-primary);
+}
+
+// TreeSelect keeps its inner option transparent with !important. Paint the
+// containing row so default (non-highlight-current) selections remain visible.
+:root.dark
+  .el-tree-select__popper
+  .el-tree-node:not([aria-disabled='true'])
+  > .el-tree-node__content:has(
+    > .el-select-dropdown__item.is-selected:not(.is-disabled)
+  ) {
+  background-color: var(--el-fill-color-darker);
+  color: var(--el-text-color-primary);
+}
+
+// Native Tree hover/focus also affects disabled nodes; keep those rows inert.
+:root.dark .el-tree-node[aria-disabled='true'] > .el-tree-node__content,
+:root.dark .el-tree-node[aria-disabled='true']:focus > .el-tree-node__content {
+  background-color: transparent;
+  cursor: not-allowed;
 }

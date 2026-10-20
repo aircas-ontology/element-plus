@@ -1,3 +1,4 @@
+@use 'sass:map';
 @use '../common/color-special';
 
 // Give each section its own spacing so the header background fills the top.
@@ -7,7 +8,7 @@
   .el-message-box__header {
     position: relative;
     padding: var(--aircas-space-2) var(--aircas-space-4);
-    background-color: color-special.$dialog-header-background;
+    background-color: map.get(color-special.$table, 'header-bg-color');
 
     &.show-close {
       padding-right: calc(40px + var(--aircas-space-2));
@@ -26,10 +27,4 @@
   .el-message-box__btns {
     padding: var(--aircas-space-2) var(--aircas-space-4) var(--aircas-space-4);
   }
-}
-
-:root.dark
-  .el-message-box__headerbtn:not(:hover):not(:focus)
-  .el-message-box__close {
-  color: var(--el-text-color-primary);
 }

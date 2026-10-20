@@ -1,14 +1,6 @@
-@use '../common/color-special';
-
-:root.dark .el-collapse {
-  --el-collapse-header-bg-color: transparent;
-  --el-collapse-content-bg-color: transparent;
-  --el-collapse-header-text-color: var(--el-text-color-regular);
-  --el-collapse-content-text-color: var(--el-text-color-secondary);
-}
-
+// Native active text uses the dark primary; a cyan label makes state visible.
 :root.dark
   .el-collapse-item:not(.is-disabled)
   > .el-collapse-item__header.is-active {
-  color: color-special.$accent;
+  color: var(--el-border-color-hover);
 }

@@ -1,7 +1,6 @@
-@use '../common/color-special';
-
+// Calendar uses its selected token for hover natively, so separate the two.
 :root.dark .el-calendar {
-  --el-calendar-selected-bg-color: #{color-special.$selected-bg};
+  --el-calendar-selected-bg-color: var(--el-fill-color-darker);
 }
 
 // Keep the existing border widths, including the range calendar's hidden edges.
@@ -10,6 +9,6 @@
   border-color: var(--el-border-color);
 }
 
-:root.dark .el-calendar-table .el-calendar-day:hover {
-  background-color: color-special.$calendar-hover-bg;
+:root.dark .el-calendar-table td:not(.is-selected) .el-calendar-day:hover {
+  background-color: var(--el-fill-color-light);
 }

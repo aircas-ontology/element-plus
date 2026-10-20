@@ -1,6 +1,5 @@
-@use '../common/color-special';
-
+// Native active nodes have text-only emphasis; retain a distinct selected fill.
 :root.dark .el-cascader-node:is(.in-active-path, .is-active):not(.is-disabled) {
-  background-color: color-special.$selected-bg;
+  background-color: var(--el-fill-color-darker);
   color: var(--el-text-color-primary);
 }

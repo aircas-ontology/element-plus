@@ -1,18 +1,9 @@
-@use '../common/color-special';
-
-:root.dark {
-  @each $type in (success, warning, error) {
-    .el-message--#{$type} {
-      --el-message-border-color: var(--el-color-#{$type}-light-7);
-    }
-  }
-
-  .el-message--info {
-    --el-message-border-color: #{color-special.$message-info-border};
-  }
+:root.dark .el-message {
+  --el-message-close-icon-color: var(--el-text-color-primary);
+  --el-message-close-hover-color: var(--el-color-danger);
 
   // Keep semantic icons and native plain backgrounds independent of body text.
-  .el-message .el-message__content {
+  .el-message__content {
     color: var(--el-text-color-regular);
   }
 }

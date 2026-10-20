@@ -1,5 +1,4 @@
-@use '../common/color-special';
-
+// Keep links readable and clearly interactive against the navy background.
 :root.dark .el-breadcrumb__inner.is-link,
 :root.dark .el-breadcrumb__inner a {
   color: var(--el-text-color-regular);
@@ -9,5 +8,5 @@
   .el-breadcrumb__item:not(:last-child)
   .el-breadcrumb__inner.is-link:hover,
 :root.dark .el-breadcrumb__item:not(:last-child) .el-breadcrumb__inner a:hover {
-  color: color-special.$accent;
+  color: var(--el-border-color-hover);
 }

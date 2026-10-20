@@ -1,5 +1,6 @@
 :root.dark .el-notification {
+  // Notification resets this token locally instead of inheriting the border.
   --el-notification-border-color: var(--el-border-color);
-  // There is no consumed notification background variable in the native CSS.
-  background-color: var(--el-bg-color);
+  --el-notification-close-color: var(--el-text-color-primary);
+  --el-notification-close-hover-color: var(--el-color-danger);
 }

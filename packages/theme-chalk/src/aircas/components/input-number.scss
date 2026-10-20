@@ -2,9 +2,9 @@
 
 // Scope disabled variables to Input Number so other form controls keep their colors.
 :root.dark .el-input-number.is-disabled {
-  --el-disabled-bg-color: #{color-special.$input-number-disabled-bg};
-  --el-disabled-border-color: #{color-special.$input-number-disabled-border};
-  --el-disabled-text-color: #{color-special.$input-number-disabled-text};
+  @each $name, $value in color-special.$input-number-disabled {
+    --el-disabled-#{$name}: #{$value};
+  }
 
   // The input outline uses an inset shadow; controls use native borders.
   .el-input__wrapper {
@@ -28,7 +28,7 @@
 :root.dark .el-input-number:not(.is-disabled) {
   .el-input-number__increase:not(.is-disabled),
   .el-input-number__decrease:not(.is-disabled) {
-    background-color: color-special.$input-number-bg;
+    background-color: var(--el-fill-color);
     color: var(--el-text-color-primary);
 
     &:hover {

@@ -1,10 +1,9 @@
-@use '../common/color-special';
-
+// Native primary text is too dark on dark surfaces; reuse the focus accent.
 :root.dark .el-link.el-link--default {
-  --el-link-hover-text-color: #{color-special.$accent};
+  --el-link-hover-text-color: var(--el-border-color-hover);
 }
 
 :root.dark .el-link.el-link--primary {
-  --el-link-text-color: #{color-special.$accent};
-  --el-link-hover-text-color: #{color-special.$link-hover-color};
+  --el-link-text-color: var(--el-border-color-hover);
+  --el-link-hover-text-color: var(--el-text-color-primary);
 }

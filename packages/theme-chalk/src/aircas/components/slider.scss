@@ -1,9 +1,4 @@
-@use '../common/color-special';
-
-:root.dark .el-slider {
-  --el-slider-runway-bg-color: #{color-special.$slider-runway-bg};
-}
-
+// Keep the native runway token; cyan distinguishes the draggable handle.
 :root.dark .el-slider:not(.is-disabled) .el-slider__button {
-  background-color: color-special.$accent;
+  background-color: var(--el-border-color-hover);
 }

@@ -1,7 +1,6 @@
-@use '../common/color-special';
-
+// The checked fill already inherits primary; cyan distinguishes its border.
 :root.dark .el-checkbox {
   --el-checkbox-checked-text-color: var(--el-text-color-regular);
-  --el-checkbox-checked-input-border-color: #{color-special.$accent};
-  --el-checkbox-input-border-color-hover: #{color-special.$accent};
+  --el-checkbox-checked-input-border-color: var(--el-border-color-hover);
+  --el-checkbox-input-border-color-hover: var(--el-border-color-hover);
 }

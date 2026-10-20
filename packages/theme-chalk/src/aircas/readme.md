@@ -96,46 +96,88 @@ function setDarkMode(enabled: boolean) {
 
 **接入检查：**确认最终加载顺序为官方组件 CSS → 官方 dark 变量 CSS → AirCAS 覆盖层；检查 Button 主色、Input 焦点、Select 弹层、Table 表头与行、Dialog 遮罩在 Light / Dark 下的表现。若项目使用按需自动导入组件 CSS，也要确认这些样式没有在 AirCAS 之后覆盖它。适配层依据本仓库当前 Element Plus 源码编写；外部项目升级 Element Plus 版本时，应重新核对实际 `--el-*` 变量并回归验证组件状态。
 
-## Dark v2 配色与回归确认
+## Dark 配色精简与回归确认
 
-暗色使用海军蓝表面与深青交互主色，仅在 `:root.dark` 生效。Light 的视觉颜色及原有字号、尺寸、间距、圆角和布局保持原样。
+本轮仅调整 `:root.dark`。Light 的固定色、状态生成方式及原有保护规则不变；字号、尺寸、间距、圆角和阴影不变。颜色只使用原生 `--el-*` 变量，不建立第二套 `--aircas-color-*`。
 
-- `--el-color-primary: #126681` 是统一交互主色，供 Input/Select 焦点、链接、选中提示、Tabs、Menu、Loading 等通过官方样式继承。RGB 为 `18, 102, 129`，primary 状态色阶由该主色自动派生。
-- `--el-bg-color-page`、`--el-bg-color`、`--el-bg-color-overlay` 分别为 `#000e24`、`#00122c`、`#001630`。
-- 实心主按钮默认填充同为 `#126681`，保留专用悬停色 `#197f9e` 和按下色 `#093d7e`。其他实心语义按钮采用较暗的填充，使原生浅色文字可读；不改变全局语义色。primary plain 按钮悬停和按下时沿用官方白字；其他语义 plain 按钮保留深色文字以匹配较亮的填充。
-- 不再逐组件复刻参考包中的细节。其余组件沿用官方背景、悬停、选中、禁用、校验和浮层样式。
+### 已确认的颜色
 
-本目录仅保留以下组件文件，每项都有明确原因：
+以下为 31 个固定色值；组件通过全局变量复用颜色，设计值不散落在组件文件中。
 
-| 文件                              | 保留原因                                                                         |
-| --------------------------------- | -------------------------------------------------------------------------------- |
-| `button.scss`                     | 保留旧尺寸、实心按钮专用状态色及语义 plain 按钮文字对比度适配                   |
-| `input.scss`                      | 保留旧尺寸及 Light 输入背景（含深色浮层内），Dark 颜色继承官方变量               |
-| `select.scss`                     | 仅保留旧尺寸与已有 Light 背景；Dark 沿用原生颜色和状态                           |
-| `table.scss`                      | 保留已有 Light 表现；Dark 仅覆盖原生表头背景、文字变量，正文和各状态继续继承     |
-| `dialog.scss`、`message-box.scss` | 官方没有标题区域背景变量，仅补蓝色标题背景                                       |
-| `popper.scss`                     | 默认 dark effect 使用反色方案；深蓝底浅字需最小例外，背景及箭头仍共用原生变量    |
+| 用途                                                               | 固定色值                                              |
+| ------------------------------------------------------------------ | ----------------------------------------------------- |
+| primary / success / warning                                        | `#126681` / `#21D36A` / `#E2C626`                     |
+| danger / info                                                      | `#EB5058` / `#9CACBF`                                 |
+| Dialog、MessageBox 标题及 Table 表头                               | `#0E5C78`                                             |
+| primary 按钮 hover / active、通用选中背景                          | `#197F9E` / `#093D7E`                                 |
+| 焦点、选中边框                                                     | `#00C4E5`                                             |
+| 页面 / 组件 / 浮层背景                                             | `#000E24` / `#00122C` / `#001630`                     |
+| 通用填充 / hover 背景                                              | `#092741` / `#0A2D48`                                 |
+| 默认 / 次级 / 弱化边框                                             | `#2187A8` / `#124769` / `#073052`                     |
+| 主要 / 常规文字                                                    | `#E1EAF3` / `#C4D1DE`                                 |
+| 次要 / 占位 / 禁用文字                                             | `#8B9FB5` / `#7890A8` / `#596F86`                     |
+| 白 / 黑                                                            | `#FFFFFF` / `#000000`                                 |
+| InputNumber 原有亮灰禁用背景 / 边框 / 文字                         | `#2B3E52` / `#526170` / `#9AA7B5`                     |
+| overlay / overlay-light、mask / overlay-lighter / mask-extra-light | `#000714CC` / `#000714B8` / `#00071480` / `#00071466` |
 
-主题不依赖参考目录或其安装插件，不引入业务专用 class。继续沿用原有样式加载顺序与 `.dark` 开关。
+五类语义色的 30 个状态阶按 Element Plus 暗色规则派生：`light-3/5/7/8/9` 向 `#00122C` 分别混入 30%/50%/70%/80%/90%，`dark-2` 向白色混入 20%，RGB 逐通道四舍五入。整数百分比计算避免半通道的浮点误差，保证确认色板中的 danger light-9 为 `#181830`。`error`、RGB 和状态阶引用 `danger`，不维护重复色表。此处的 light/dark 后缀沿用官方变量名称；暗色主题的 light 色阶实际逐步接近暗背景。
 
-运行 `pnpm docs:dev` 后，优先检查：
+### 状态与覆盖保留原因
 
-| 组件                                                          | 确认内容                                                                  |
-| ------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| Button、Link                                                  | 实心/plain/text/link/dashed；悬停、按下、禁用、加载、键盘焦点及文字可读性 |
-| Input、Select、Form、InputOtp                                 | 原生深青焦点；错误红边与聚焦叠加；禁用状态；下拉选项及多选                |
-| Table、Table V2                                               | 蓝色表头；官方正文、条纹、行悬停、当前行与固定列                          |
-| Dialog、MessageBox、Drawer                                    | 标题背景、正文、关闭按钮、遮罩与 body 弹层                                |
-| DatePicker、TimePicker、Cascader                              | 原生选中、今天、范围、禁用及浮层                                          |
-| Checkbox、Radio、Switch、Menu、Tree、Tabs、Pagination         | 确认无需组件覆盖即可继承新主题，检查选中、禁用与键盘焦点                  |
-| Tooltip、Popover、Dropdown、Tag、Alert、Message、Notification | 浮层箭头一致、各 effect 与语义类型的原生表现                              |
+- 实心按钮默认背景直接继承五类语义主色。primary 保留白字、专用 hover/active；其余类型使用黑字、hover 为 `dark-2`、active 为 `light-3`，danger active 使用白字。plain/text/link/dashed 保留原生变体行为，仅修正必要文字对比和键盘焦点。
+- `fill-color-light` 和 `fill-color-dark` 统一为 `#0A2D48`，供下拉、树节点、时间列表及表格行继承。`fill-color-darker` 为 `#093D7E`，用于选中背景；默认边框为 `#2187A8`，焦点及交互边框为 `#00C4E5`。
+- Dialog、MessageBox 没有原生标题背景变量，保留铺满标题区域所需的背景、间距和关闭按钮避让规则。
+- Alert 亮色语义的 dark effect 使用黑色内容文字；关闭图标复用黑色阴影保留轮廓，避免 danger hover 在 error 背景上消失，不增加按钮背景或新颜色。
+- Table 当前行在 hover、条纹和固定列组合下保留选中背景；普通行仍使用统一 hover 色。
+- 关闭控件集中在 `close.scss`：Dialog、MessageBox、Drawer、Notification、Message、Alert、Tour 使用透明背景、浅色默认图标、danger hover/focus 渐变及可见键盘焦点；遵守 reduced-motion 偏好。
+- TreeSelect 内部 option 被官方设为透明背景，因此只对选中 option 的父行补背景；普通 hover 继承全局填充。Tree 禁用节点不响应 hover/focus 填充。
 
-最后切回 Light，复查 Button、Input、Select、Table、Dialog。
+| 保留的组件覆盖                                              | 原因                                                            |
+| ----------------------------------------------------------- | --------------------------------------------------------------- |
+| Button、Input、Select                                       | 既有尺寸及 Light 背景保护；深色主色下的文字、焦点和按钮状态适配 |
+| RadioButton、Checkbox、Radio、Switch、Slider                | 局部原生变量、原生直接颜色规则与选中/焦点对比                   |
+| Table                                                       | 原有 Light 保护，Dark 表头、当前行和不干扰 hover 的条纹         |
+| Tree、Cascader、Dropdown、DatePicker、Calendar              | 局部初始化或原生只改字色的状态；区别选中、hover、禁用           |
+| Dialog、MessageBox、Close                                   | 标题区域无原生背景变量；统一右上角关闭控件状态                  |
+| Popper、Popover                                             | dark effect 原生反色及箭头边框的最小例外                        |
+| InputNumber                                                 | 保留原有亮灰禁用表现；增减控件原生直接样式的适配                |
+| Form                                                        | 校验错误边框优先于 cyan focus，标签颜色沿用原有表现             |
+| Alert、Message、Notification、Tour                          | 内容文字对比、局部关闭变量及浮层背景初始化                      |
+| Anchor、Backtop、Breadcrumb、Collapse、Link、Loading、Steps | 原生 primary 用于文字或指示器时过暗，需要复用 cyan              |
+| Menu、Pagination、Segmented、Tabs、Tag、Upload              | 局部原生变量或原生直接颜色规则，保证交互与选中对比              |
+
+已删除 Avatar、Card、Descriptions、Drawer、Progress、Scrollbar、Skeleton、Timeline、Transfer 的独立覆盖文件及入口导入。Drawer 关闭控件由 `close.scss` 统一处理，其余恢复原生变量继承。其余组件中重复的 hover/disabled 色、暗按钮填充、特殊 info 色和无必要的背景/边框覆盖也已移除。
+
+### 验证
+
+自动化测试真实编译「官方组件 CSS → 官方 dark CSS → Aircas」，再用本仓库已有 Puppeteer/Chrome 检查实际计算样式及鼠标、键盘状态，不修改官方 Demo。浏览器需已安装；测试需具备启动本地 Chrome 的权限。
 
 ```bash
 pnpm exec vitest run packages/theme-chalk/src/aircas/__tests__/theme.test.ts
 pnpm build:theme
 pnpm docs:build
+pnpm docs:dev
 ```
 
-`build:theme` 不生成独立 AirCAS CSS，独立接入沿用本文“方式一”或“方式二”。
+若完整 docs 构建触及 Node 默认堆上限，可只为该命令提高堆内存，不需要改项目配置：
+
+```bash
+NODE_OPTIONS=--max-old-space-size=8192 pnpm docs:build
+```
+
+`build:theme` 不生成独立 Aircas CSS；独立接入继续沿用本文“方式一”或“方式二”。主题源码只依赖 Sass 内置模块，复制整个目录仍可独立编译。
+
+运行 `pnpm docs:dev` 后使用终端实际地址（2000 被占用时会自动递增），通过页面现有开关切换 Dark，并重点回归：
+
+| 组件                                                  | 检查内容                                                                       |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------ |
+| Button、Link                                          | 实心/plain/text/link/dashed；默认、hover、active、disabled、loading 和键盘焦点 |
+| Input、Select、SelectV2、TreeSelect、Form             | cyan focus、错误叠加、hover、selected、多选勾号、disabled                      |
+| Table、TableV2                                        | 表头、条纹、hover、当前行、固定列及内嵌控件                                    |
+| DatePicker、DateTimePicker、TimePicker、Cascader      | 日/月/年、今天、范围、选中端点、hover、disabled 和 body 弹层                   |
+| Dialog、MessageBox、Drawer                            | 标题背景、正文、关闭图标的默认/hover/focus、透明按钮背景和遮罩                 |
+| Notification、Message、Alert、Tour                    | 右上角关闭控件、不同 effect 和语义内容文字                                     |
+| Checkbox、Radio、Switch、Tree、Menu、Tabs、Pagination | 选中、hover、disabled 与键盘焦点                                               |
+| Tooltip、Popover、Dropdown                            | dark/light effect、箭头和浮层边框一致                                          |
+
+最后通过现有开关切回 Light，复查 Button、Input、Select、Table、Dialog，然后再次切回 Dark。检查最终 diff 仅包含本目录文件，不提交 docs 的生成文件或独立编译输出。

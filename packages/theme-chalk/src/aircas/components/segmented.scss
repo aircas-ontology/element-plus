@@ -1,7 +1,6 @@
-@use '../common/color-special';
-
+// Segmented initializes the selected fill independently of global fill tokens.
 :root.dark .el-segmented {
   --el-segmented-bg-color: var(--el-bg-color);
-  --el-segmented-item-selected-bg-color: #{color-special.$selected-bg};
+  --el-segmented-item-selected-bg-color: var(--el-fill-color-darker);
   --el-segmented-item-selected-color: var(--el-text-color-primary);
 }

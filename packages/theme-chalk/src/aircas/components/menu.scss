@@ -1,14 +1,13 @@
-@use '../common/color-special';
-
+// Menu initializes primary-tinted interaction colors locally.
 :root.dark .el-menu {
   --el-menu-bg-color: var(--el-bg-color);
   --el-menu-text-color: var(--el-text-color-regular);
-  --el-menu-hover-bg-color: #{color-special.$menu-hover-bg};
-  --el-menu-hover-text-color: #{color-special.$accent};
-  --el-menu-active-color: #{color-special.$accent};
+  --el-menu-hover-bg-color: var(--el-fill-color-light);
+  --el-menu-hover-text-color: var(--el-border-color-hover);
+  --el-menu-active-color: var(--el-border-color-hover);
 }
 
 :root.dark .el-menu-item.is-active:not(.is-disabled) {
-  background-color: color-special.$selected-bg;
+  background-color: var(--el-fill-color-darker);
   color: var(--el-text-color-primary);
 }

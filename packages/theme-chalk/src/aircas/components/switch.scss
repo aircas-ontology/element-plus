@@ -1,14 +1,13 @@
-@use '../common/color-special';
-
+// The native inactive track uses the weak border; use the shared dark fill.
 :root.dark .el-switch {
-  --el-switch-on-color: #{color-special.$switch-on};
-  --el-switch-off-color: #{color-special.$text-button-bg};
+  --el-switch-off-color: var(--el-fill-color);
 }
 
+// Active labels and keyboard outlines need contrast beyond the dark primary.
 :root.dark .el-switch:not(.is-disabled) .el-switch__label.is-active {
-  color: color-special.$accent;
+  color: var(--el-border-color-hover);
 }
 
 :root.dark .el-switch__input:focus-visible + .el-switch__core {
-  outline-color: color-special.$accent;
+  outline-color: var(--el-border-color-hover);
 }

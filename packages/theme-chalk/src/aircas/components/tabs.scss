@@ -1,5 +1,4 @@
-@use '../common/color-special';
-
+// Native tab states use primary directly; retain readable text and selected surfaces.
 :root.dark .el-tabs__item:not(.is-disabled) {
   color: var(--el-text-color-secondary);
 }
@@ -10,7 +9,7 @@
   .el-tabs--border-card
   > .el-tabs__header
   .el-tabs__item:not(.is-disabled):hover {
-  color: color-special.$accent;
+  color: var(--el-border-color-hover);
 }
 
 :root.dark .el-tabs--border-card {
@@ -18,7 +17,7 @@
 }
 
 :root.dark .el-tabs--border-card > .el-tabs__header {
-  background-color: color-special.$text-button-bg;
+  background-color: var(--el-fill-color);
 }
 
 :root.dark .el-tabs--card > .el-tabs__header .el-tabs__nav,
@@ -34,7 +33,7 @@
   .el-tabs--border-card
   > .el-tabs__header
   .el-tabs__item.is-active:not(.is-disabled) {
-  background-color: color-special.$selected-bg;
+  background-color: var(--el-fill-color-darker);
   border-color: var(--el-border-color);
   color: var(--el-text-color-primary);
 }

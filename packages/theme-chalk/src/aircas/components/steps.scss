@@ -1,17 +1,7 @@
-@use '../common/color-special';
-
+// Process indicators need more contrast than the solid-control primary color.
+// Waiting states and the simple surface now inherit native theme variables.
 :root.dark .el-step__head.is-process,
 :root.dark .el-step__title.is-process {
-  color: color-special.$accent;
-  border-color: color-special.$accent;
-}
-
-:root.dark .el-step__head.is-wait,
-:root.dark .el-step__title.is-wait {
-  color: color-special.$step-wait-color;
-  border-color: color-special.$step-wait-border;
-}
-
-:root.dark .el-steps--simple {
-  background-color: color-special.$text-button-bg;
+  color: var(--el-border-color-hover);
+  border-color: var(--el-border-color-hover);
 }

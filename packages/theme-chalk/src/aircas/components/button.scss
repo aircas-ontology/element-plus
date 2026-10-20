@@ -4,51 +4,77 @@
   height: var(--aircas-size-button);
 }
 
-// Native variants initialize --el-button-* on the button itself, so root
-// overrides cannot supply dark fills independently of bright semantic text.
-// Keep the native state selectors; only replace their existing variables.
-@each $type, $colors in color-special.$button {
+// Native focus outlines use dark primary tints; cyan remains visible on fills.
+:root.dark .el-button {
+  --el-button-outline-color: var(--el-border-color-hover);
+}
+
+// Native variants initialize their variables locally. Keep their state selectors
+// and semantic base fills, adapting only contrast and the approved state ramps.
+@each $type in (primary, success, warning, danger, info) {
   :root.dark
     .el-button--#{$type}:not(.is-plain, .is-text, .is-link, .is-dashed) {
-    @each $name, $value in $colors {
-      --el-button-#{$name}: #{$value};
+    @if $type == primary {
+      @each $name, $value in color-special.$button-primary {
+        --el-button-#{$name}: #{$value};
+      }
+      --el-button-hover-border-color: var(--el-button-hover-bg-color);
+      --el-button-active-border-color: var(--el-button-active-bg-color);
+      --el-button-active-text-color: var(--el-color-white);
+    } @else {
+      --el-button-text-color: var(--el-color-black);
+      --el-button-hover-text-color: var(--el-color-black);
+      --el-button-active-text-color: var(--el-color-black);
+      --el-button-hover-bg-color: var(--el-color-#{$type}-dark-2);
+      --el-button-hover-border-color: var(--el-color-#{$type}-dark-2);
+      --el-button-active-bg-color: var(--el-color-#{$type}-light-3);
+      --el-button-active-border-color: var(--el-color-#{$type}-light-3);
+
+      @if $type == danger {
+        --el-button-active-text-color: var(--el-color-white);
+      }
     }
   }
 
-  // Primary uses native white text; the brighter semantic fills need dark text.
-  @if $type != 'primary' {
+  // Plain hover uses the bright semantic base, which requires dark text.
+  @if $type != primary {
     :root.dark .el-button--#{$type}.is-plain {
-      --el-button-hover-text-color: var(--el-bg-color);
-      --el-button-active-text-color: var(--el-bg-color);
+      --el-button-hover-text-color: var(--el-color-black);
+      --el-button-active-text-color: var(--el-color-black);
     }
   }
 }
 
+// The dark primary base is suitable for fills; cyan keeps text variants legible.
+:root.dark .el-button--primary:is(.is-plain, .is-text, .is-link, .is-dashed) {
+  --el-button-text-color: var(--el-border-color-hover);
+  --el-button-active-color: var(--el-border-color-hover);
+}
+
+:root.dark .el-button--primary:is(.is-text, .is-dashed) {
+  --el-button-hover-text-color: var(--el-border-color-hover);
+  --el-button-active-text-color: var(--el-text-color-primary);
+}
+
+// Default buttons inherit their resting fill; only native primary-tinted states
+// need neutral text and a shared interaction surface in the dark theme.
 :root.dark
   .el-button:not(
     .el-button--primary,
     .el-button--success,
     .el-button--warning,
     .el-button--danger,
-    .el-button--info,
-    .is-plain,
-    .is-text,
-    .is-link,
-    .is-dashed
+    .el-button--info
   ) {
-  --el-button-bg-color: #{color-special.$text-button-bg};
-  --el-button-text-color: var(--el-text-color-regular);
-  --el-button-hover-bg-color: #{color-special.$button-hover-bg};
+  --el-button-hover-bg-color: var(--el-fill-color-light);
   --el-button-hover-text-color: var(--el-text-color-primary);
-  --el-button-hover-border-color: var(--el-color-primary-light-3);
-  --el-button-active-bg-color: #{color-special.$selected-bg};
-  --el-button-active-border-color: var(--el-color-primary-light-3);
+  --el-button-hover-border-color: var(--el-border-color-hover);
+  --el-button-active-bg-color: var(--el-fill-color-darker);
+  --el-button-active-text-color: var(--el-text-color-primary);
+  --el-button-active-border-color: var(--el-border-color-hover);
 }
 
-:root.dark .el-button--primary:is(.is-plain, .is-text, .is-link) {
-  --el-button-text-color: #{color-special.$accent};
-}
-
-:root.dark .el-button.is-link:not(.is-disabled):hover {
-  color: var(--el-text-color-primary);
+// Link hover has its own variable and otherwise picks a dark light-5 tint.
+:root.dark .el-button.is-link {
+  --el-button-hover-link-text-color: var(--el-text-color-primary);
 }

@@ -1,14 +1,5 @@
-@use '../common/color-special';
-
-:root.dark .el-upload:not(.is-disabled) .el-upload-dragger {
-  border-color: color-special.$upload-border;
-}
-
+// Native dragger hover uses the dark primary; cyan communicates interactivity.
 :root.dark .el-upload:not(.is-disabled) .el-upload-dragger:hover,
 :root.dark .el-upload:not(.is-disabled):focus .el-upload-dragger {
-  border-color: color-special.$accent;
-}
-
-:root.dark .el-upload__tip {
-  color: var(--el-text-color-secondary);
+  border-color: var(--el-border-color-hover);
 }
