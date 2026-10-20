@@ -1,0 +1,13 @@
+// Only the line variant inherits theme fills; circle/dashboard use SVG colors.
+:root.dark .el-progress--line {
+  &:not(.is-success, .is-warning, .is-exception) .el-progress-bar__inner {
+    background-color: var(--el-border-color-hover);
+  }
+
+  // The component writes custom colors (including functions/arrays/gradients)
+  // as inline backgrounds. Their text contract must remain untouched.
+  .el-progress-bar__inner:not([style*='background'])
+    .el-progress-bar__innerText {
+    color: var(--el-color-black);
+  }
+}

@@ -5,9 +5,10 @@
   --el-datepicker-hover-text-color: var(--el-text-color-primary);
 }
 
-// Native date/month/year hover changes only text. Highlight available cells
+// Native date/month/year/quarter hover changes only text. Highlight available cells
 // without replacing selected endpoints or disabled backgrounds.
-:root.dark :is(.el-date-table, .el-month-table, .el-year-table) {
+:root.dark
+  :is(.el-date-table, .el-month-table, .el-year-table, .el-quarter-table) {
   td:not(.current, .selected, .start-date, .end-date, .disabled, .week):hover
     .el-date-table-cell__text {
     background-color: var(--el-fill-color-light);
@@ -16,6 +17,11 @@
   td.today:not(.current, .selected, .start-date, .end-date, .disabled)
     .el-date-table-cell__text {
     color: var(--el-border-color-hover);
+  }
+
+  td:not(.disabled):focus-visible .el-date-table-cell__text {
+    outline: 2px solid var(--el-border-color-hover);
+    outline-offset: 1px;
   }
 }
 
@@ -31,5 +37,10 @@
 
 // The native time panel uses a weaker border than other dark popovers.
 :root.dark .el-time-panel {
+  --el-timepicker-active-color: var(--el-border-color-hover);
   border-color: var(--el-border-color);
+}
+
+:root.dark .el-time-spinner__arrow:hover {
+  color: var(--el-border-color-hover);
 }

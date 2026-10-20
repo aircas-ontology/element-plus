@@ -1,7 +1,10 @@
 // Process indicators need more contrast than the solid-control primary color.
 // Waiting states and the simple surface now inherit native theme variables.
 :root.dark .el-step__head.is-process,
-:root.dark .el-step__title.is-process {
+:root.dark .el-step__title.is-process,
+:root.dark .el-step__head.is-finish,
+:root.dark .el-step__title.is-finish,
+:root.dark .el-step__description.is-finish {
   color: var(--el-border-color-hover);
   border-color: var(--el-border-color-hover);
 }

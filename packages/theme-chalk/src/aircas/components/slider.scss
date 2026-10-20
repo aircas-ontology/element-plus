@@ -1,4 +1,26 @@
-// Keep the native runway token; cyan distinguishes the draggable handle.
-:root.dark .el-slider:not(.is-disabled) .el-slider__button {
-  background-color: var(--el-border-color-hover);
+// Set the default beside the native token so root inline overrides still win.
+:root.dark .el-slider {
+  --el-slider-main-bg-color: var(--el-border-color-hover);
+}
+
+// Disabled lives on the runway, not the slider root. Keep its native colors.
+:root.dark .el-slider__runway:not(.is-disabled) {
+  outline: 1px solid var(--el-border-color);
+
+  .el-slider__button {
+    background-color: var(--el-bg-color);
+  }
+
+  .el-slider__button-wrapper:focus-visible .el-slider__button {
+    box-shadow: 0 0 0 2px var(--el-bg-color);
+    outline: 2px solid var(--el-border-color-hover);
+    outline-offset: 2px;
+  }
+
+  // Marks remain on both sides of the selected range. A dark center and light
+  // rim distinguish them from both the cyan bar and the dark runway.
+  .el-slider__marks-stop {
+    background-color: var(--el-bg-color);
+    box-shadow: 0 0 0 1px var(--el-text-color-primary);
+  }
 }

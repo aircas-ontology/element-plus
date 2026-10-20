@@ -4,3 +4,12 @@
   --el-segmented-item-selected-bg-color: var(--el-fill-color-darker);
   --el-segmented-item-selected-color: var(--el-text-color-primary);
 }
+
+// The native selected fill also paints focus, but is intentionally dark here.
+:root.dark .el-segmented__item-selected:not(.is-disabled) {
+  box-shadow: inset 0 0 0 1px var(--el-border-color-hover);
+
+  &.is-focus-visible::before {
+    outline-color: var(--el-border-color-hover);
+  }
+}

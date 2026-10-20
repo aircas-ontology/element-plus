@@ -4,3 +4,7 @@
   --el-checkbox-checked-input-border-color: var(--el-border-color-hover);
   --el-checkbox-input-border-color-hover: var(--el-border-color-hover);
 }
+
+:root.dark .el-checkbox.is-bordered.is-checked:not(.is-disabled) {
+  border-color: var(--el-border-color-hover);
+}

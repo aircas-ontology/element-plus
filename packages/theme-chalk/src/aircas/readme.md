@@ -131,11 +131,16 @@ function setDarkMode(enabled: boolean) {
 - Table 当前行在 hover、条纹和固定列组合下保留选中背景；普通行仍使用统一 hover 色。
 - 关闭控件集中在 `close.scss`：Dialog、MessageBox、Drawer、Notification、Message、Alert、Tour 使用透明背景、浅色默认图标、danger hover/focus 渐变及可见键盘焦点；遵守 reduced-motion 偏好。
 - TreeSelect 内部 option 被官方设为透明背景，因此只对选中 option 的父行补背景；普通 hover 继承全局填充。Tree 禁用节点不响应 hover/focus 填充。
+- Slider 在根元素设置原生 `--el-slider-main-bg-color` 的默认值为 cyan，保留调用方根元素行内变量的优先级；未选区保留深蓝并补轮廓，滑块使用深色中心、cyan 边界和带间隔的焦点环，标记点使用深色中心与浅色描边。禁用类实际位于 `runway`，禁用轨道、滑块和刻度保持原生弱化颜色，范围和竖向模式共用这些规则。
+- Switch 保留原有开关填充、滑块和禁用透明度，为可用轨道补默认边框。焦点使用通用兄弟选择器，兼容左侧文字、图标或 slot。Segmented、RadioButton 保留深蓝选中填充，使用 cyan 区分选中边界和焦点；Checkbox、Radio 的 bordered 选中边框也使用 cyan，禁用状态不参与覆盖。
+- Tabs 活动条、后备活动条和焦点、Steps 的 finish 图标/连线/文字、Calendar 的 today 文字使用 cyan。DatePicker 的日/月/年/季度补齐焦点与季度 today/hover，TimePicker 确认文字与箭头 hover 使用 cyan；日期端点及选中填充保留暗主色和白字，避免提高填充亮度后降低文字对比。
+- Tag 的 dark effect 在 success、warning、danger、info 填充上使用黑字；关闭图标的 light/plain hover 使用黑字，dark effect 的 success/warning/info hover 使用黑字，primary/danger 保留白字。关闭图标焦点使用 cyan。
+- Transfer 仅增强可用且未选中条目的 hover 文字，选中和禁用标签继续遵循 Checkbox。Progress 仅覆盖线性条：默认进度 cyan、轨道轮廓和默认/语义状态内部黑字；调用方的 `color`（包括函数、数组及渐变）产生行内 background 时，保留自定义填充及原有内部文字颜色。圆形和 dashboard 的 SVG 配色不变。
 
 | 保留的组件覆盖                                              | 原因                                                            |
 | ----------------------------------------------------------- | --------------------------------------------------------------- |
 | Button、Input、Select                                       | 既有尺寸及 Light 背景保护；深色主色下的文字、焦点和按钮状态适配 |
-| RadioButton、Checkbox、Radio、Switch、Slider                | 局部原生变量、原生直接颜色规则与选中/焦点对比                   |
+| RadioButton、Checkbox、Radio、Switch、Slider、Segmented     | 局部原生变量、原生直接颜色规则与选中/焦点对比                   |
 | Table                                                       | 原有 Light 保护，Dark 表头、当前行和不干扰 hover 的条纹         |
 | Tree、Cascader、Dropdown、DatePicker、Calendar              | 局部初始化或原生只改字色的状态；区别选中、hover、禁用           |
 | Dialog、MessageBox、Close                                   | 标题区域无原生背景变量；统一右上角关闭控件状态                  |
@@ -145,12 +150,13 @@ function setDarkMode(enabled: boolean) {
 | Alert、Message、Notification、Tour                          | 内容文字对比、局部关闭变量及浮层背景初始化                      |
 | Anchor、Backtop、Breadcrumb、Collapse、Link、Loading、Steps | 原生 primary 用于文字或指示器时过暗，需要复用 cyan              |
 | Menu、Pagination、Segmented、Tabs、Tag、Upload              | 局部原生变量或原生直接颜色规则，保证交互与选中对比              |
+| Transfer、Progress                                          | 条目 hover、线性进度和内部文字对比；保留调用方自定义颜色        |
 
-已删除 Avatar、Card、Descriptions、Drawer、Progress、Scrollbar、Skeleton、Timeline、Transfer 的独立覆盖文件及入口导入。Drawer 关闭控件由 `close.scss` 统一处理，其余恢复原生变量继承。其余组件中重复的 hover/disabled 色、暗按钮填充、特殊 info 色和无必要的背景/边框覆盖也已移除。
+Avatar、Card、Descriptions、Drawer、Scrollbar、Skeleton、Timeline 没有独立覆盖文件及入口导入。Drawer 关闭控件由 `close.scss` 统一处理，其余沿用原生变量继承。Transfer、Progress 的最小覆盖通过 `index.scss` 导入。其余组件中重复的 hover/disabled 色、暗按钮填充、特殊 info 色和无必要的背景/边框覆盖也已移除。
 
 ### 验证
 
-自动化测试真实编译「官方组件 CSS → 官方 dark CSS → Aircas」，再用本仓库已有 Puppeteer/Chrome 检查实际计算样式及鼠标、键盘状态，不修改官方 Demo。浏览器需已安装；测试需具备启动本地 Chrome 的权限。
+自动化测试真实编译「官方组件 CSS → 官方 dark CSS → Aircas」，再用本仓库已有 Puppeteer/Chrome 检查实际计算样式及鼠标、键盘状态，不修改官方 Demo。关键颜色对按 WCAG 相对亮度计算对比度：普通文字至少 4.5:1，必要控件边界与状态标识至少 3:1；禁用态保留弱化，不将装饰背景统一提高对比度。覆盖页面、组件、浮层背景，并将 Light 与不含 Dark 组件覆盖的独立编译结果比较。浏览器需已安装；测试需具备启动本地 Chrome 的权限。
 
 ```bash
 pnpm exec vitest run packages/theme-chalk/src/aircas/__tests__/theme.test.ts
@@ -174,10 +180,12 @@ NODE_OPTIONS=--max-old-space-size=8192 pnpm docs:build
 | Button、Link                                          | 实心/plain/text/link/dashed；默认、hover、active、disabled、loading 和键盘焦点 |
 | Input、Select、SelectV2、TreeSelect、Form             | cyan focus、错误叠加、hover、selected、多选勾号、disabled                      |
 | Table、TableV2                                        | 表头、条纹、hover、当前行、固定列及内嵌控件                                    |
-| DatePicker、DateTimePicker、TimePicker、Cascader      | 日/月/年、今天、范围、选中端点、hover、disabled 和 body 弹层                   |
+| DatePicker、DateTimePicker、TimePicker、Cascader      | 日/月/年/季度、今天、范围、选中端点、键盘焦点、hover、disabled 和 body 弹层    |
 | Dialog、MessageBox、Drawer                            | 标题背景、正文、关闭图标的默认/hover/focus、透明按钮背景和遮罩                 |
 | Notification、Message、Alert、Tour                    | 右上角关闭控件、不同 effect 和语义内容文字                                     |
 | Checkbox、Radio、Switch、Tree、Menu、Tabs、Pagination | 选中、hover、disabled 与键盘焦点                                               |
+| Slider、Segmented、RadioButton                        | 选中边界、焦点、禁用；Slider 范围、竖向、刻度与标记                            |
+| Tag、Transfer、Progress                               | Tag 各 effect 与关闭图标；Transfer 状态；线性进度内部文字、自定义颜色及渐变    |
 | Tooltip、Popover、Dropdown                            | dark/light effect、箭头和浮层边框一致                                          |
 
 最后通过现有开关切回 Light，复查 Button、Input、Select、Table、Dialog，然后再次切回 Dark。检查最终 diff 仅包含本目录文件，不提交 docs 的生成文件或独立编译输出。

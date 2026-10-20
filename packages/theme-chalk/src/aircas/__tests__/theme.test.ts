@@ -22,17 +22,22 @@ const css = compileString(
   '@use "index.scss" as official; @use "dark/css-vars.scss"; @use "aircas/index.scss" as aircas;',
   { loadPaths: [themeDir], logger: { warn() {}, debug() {} } }
 ).css
+const lightBaseline = compileString(
+  '@use "index.scss" as official; @use "aircas/themes/light.scss"; @use "aircas/variables.scss";',
+  { loadPaths: [themeDir], logger: { warn() {}, debug() {} } }
+).css
 let browser: Browser
 let page: Page
 
 const rgb = (hex: string) =>
   `rgb(${[1, 3, 5].map((i) => Number.parseInt(hex.slice(i, i + 2), 16)).join(', ')})`
 
-async function style(selector: string, property: string) {
+async function style(selector: string, property: string, pseudo?: string) {
   return page.$eval(
     selector,
-    (el, prop) => getComputedStyle(el).getPropertyValue(prop).trim(),
-    property
+    (el, { property, pseudo }) =>
+      getComputedStyle(el, pseudo).getPropertyValue(property).trim(),
+    { property, pseudo }
   )
 }
 
@@ -51,6 +56,39 @@ async function render(html: string, dark = true) {
   await page.setContent(
     `<html class="${dark ? 'dark' : ''}"><head><style>${css}</style></head><body>${html}</body></html>`
   )
+}
+
+// WCAG relative luminance, using the opaque colors returned by the browser.
+function contrast(foreground: string, background: string) {
+  const luminance = (color: string) => {
+    const channels = color
+      .match(/[\d.]+/g)!
+      .slice(0, 3)
+      .map(Number)
+      .map((value) => {
+        const channel = value / 255
+        return channel <= 0.04045
+          ? channel / 12.92
+          : ((channel + 0.055) / 1.055) ** 2.4
+      })
+    return channels[0] * 0.2126 + channels[1] * 0.7152 + channels[2] * 0.0722
+  }
+  const values = [luminance(foreground), luminance(background)].sort(
+    (a, b) => b - a
+  )
+  return (values[0] + 0.05) / (values[1] + 0.05)
+}
+
+async function renderStates(html: string) {
+  await render(html)
+  await page.addStyleTag({
+    content: '*, *::before, *::after { transition-duration: 0s !important; }',
+  })
+}
+
+async function focus(selector: string) {
+  await page.keyboard.press('Tab')
+  await page.focus(selector)
 }
 
 beforeAll(async () => {
@@ -425,5 +463,337 @@ describe('Aircas component states', () => {
     await page.keyboard.press('Tab')
     expect(await style('#close', 'outline-style')).toBe('solid')
     expect(await style('#close', 'outline-color')).toBe(rgb('#eb5058'))
+  })
+})
+
+describe('Aircas contrast regressions', () => {
+  it.each(['', 'range', 'vertical'])(
+    'distinguishes %s slider tracks, handles, marks and focus',
+    async (variant) => {
+      const surface =
+        variant === 'range'
+          ? 'bg-color'
+          : variant === 'vertical'
+            ? 'bg-color-overlay'
+            : 'bg-color-page'
+      await renderStates(`<div id="surface" class="el-slider ${variant === 'vertical' ? 'is-vertical' : ''}" style="height:200px;background:var(--el-${surface})">
+      <div id="runway" class="el-slider__runway"><div id="bar" class="el-slider__bar" style="${variant === 'vertical' ? 'height:50%' : 'width:50%'}"></div>
+      <div id="handle" class="el-slider__button-wrapper" tabindex="0"><div id="thumb" class="el-slider__button"></div></div>
+      ${variant === 'range' ? '<div class="el-slider__button-wrapper" style="left:80%" tabindex="0"><div id="second-thumb" class="el-slider__button"></div></div>' : ''}
+      <div><div id="stop" class="el-slider__stop"></div><div id="mark" class="el-slider__stop el-slider__marks-stop"></div></div>
+      <div class="el-slider__marks"><div id="mark-text" class="el-slider__marks-text">50%</div></div></div></div>`)
+      const bar = await style('#bar', 'background-color')
+      expect(bar).toBe(rgb('#00c4e5'))
+      expect(
+        contrast(bar, await style('#runway', 'background-color'))
+      ).toBeGreaterThanOrEqual(3)
+      expect(await style('#runway', 'outline-style')).toBe('solid')
+      expect(
+        contrast(
+          await style('#runway', 'outline-color'),
+          await style('#surface', 'background-color')
+        )
+      ).toBeGreaterThanOrEqual(3)
+      expect(
+        contrast(await style('#thumb', 'background-color'), bar)
+      ).toBeGreaterThanOrEqual(3)
+      expect(await style('#thumb', 'border-color')).toBe(bar)
+      expect(
+        contrast(
+          await style('#stop', 'background-color'),
+          await style('#runway', 'background-color')
+        )
+      ).toBeGreaterThanOrEqual(3)
+      expect(
+        contrast(await style('#mark', 'background-color'), bar)
+      ).toBeGreaterThanOrEqual(3)
+      expect(await style('#mark', 'box-shadow')).not.toBe('none')
+      expect(
+        contrast(
+          await style('#mark-text', 'color'),
+          await paletteColor('bg-color')
+        )
+      ).toBeGreaterThanOrEqual(4.5)
+      if (variant === 'range')
+        expect(await style('#second-thumb', 'background-color')).toBe(
+          await style('#thumb', 'background-color')
+        )
+      await focus('#handle')
+      expect(await style('#thumb', 'outline-style')).toBe('solid')
+      expect(
+        contrast(
+          await style('#thumb', 'outline-color'),
+          await style('#surface', 'background-color')
+        )
+      ).toBeGreaterThanOrEqual(3)
+    }
+  )
+
+  it('preserves root slider color overrides', async () => {
+    await renderStates(
+      '<div class="el-slider" style="--el-slider-main-bg-color: #2187a8"><div class="el-slider__runway"><div id="bar" class="el-slider__bar"></div><div id="thumb" class="el-slider__button"></div></div></div>'
+    )
+    expect(await style('#bar', 'background-color')).toBe(rgb('#2187a8'))
+    expect(await style('#thumb', 'border-color')).toBe(rgb('#2187a8'))
+  })
+
+  it('keeps disabled slider handles white when the runway is disabled', async () => {
+    await renderStates(
+      '<div class="el-slider"><div id="runway" class="el-slider__runway is-disabled"><div id="bar" class="el-slider__bar"></div><div class="el-slider__button-wrapper"><div id="thumb" class="el-slider__button"></div></div></div></div>'
+    )
+    expect(await style('#thumb', 'background-color')).toBe(rgb('#ffffff'))
+    expect(await style('#thumb', 'border-color')).toBe(
+      await style('#bar', 'background-color')
+    )
+    expect(await style('#thumb', 'border-color')).not.toBe(rgb('#00c4e5'))
+    expect(await style('#runway', 'outline-style')).toBe('none')
+  })
+
+  it.each([false, true])(
+    'shows the switch border and focus with a left label (checked %s)',
+    async (checked) => {
+      await renderStates(
+        `<div class="el-switch ${checked ? 'is-checked' : ''}"><input id="input" type="checkbox" class="el-switch__input"><span class="el-switch__label el-switch__label--left">Off</span><span id="core" class="el-switch__core"><span class="el-switch__action"></span></span></div>`
+      )
+      expect(await style('#core', 'border-color')).toBe(rgb('#2187a8'))
+      await focus('#input')
+      expect(await style('#core', 'outline-style')).toBe('solid')
+      expect(await style('#core', 'outline-color')).toBe(rgb('#00c4e5'))
+      const fill = await style('#core', 'background-color')
+      await page.$eval('.el-switch', (el) => el.classList.add('is-disabled'))
+      expect(await style('.el-switch', 'opacity')).toBe('0.6')
+      expect(await style('#core', 'background-color')).toBe(fill)
+    }
+  )
+
+  it('distinguishes segmented selection and focus without brightening disabled selection', async () => {
+    await renderStates(
+      '<div class="el-segmented"><div class="el-segmented__group"><div id="selected" class="el-segmented__item-selected is-focus-visible"></div><div id="disabled" class="el-segmented__item-selected is-disabled"></div><label class="el-segmented__item is-selected">Selected</label></div></div>'
+    )
+    expect(await style('#selected', 'background-color')).toBe(rgb('#093d7e'))
+    expect(await style('#selected', 'box-shadow')).toContain(rgb('#00c4e5'))
+    expect(await style('#selected', 'outline-color', '::before')).toBe(
+      rgb('#00c4e5')
+    )
+    expect(await style('#disabled', 'box-shadow')).toBe('none')
+  })
+
+  it('shows radio-button selection, hover and keyboard focus', async () => {
+    await renderStates(
+      '<label class="el-radio-button is-active"><input id="input" class="el-radio-button__original-radio" type="radio" checked><span id="checked" class="el-radio-button__inner">Selected</span></label><label class="el-radio-button"><input class="el-radio-button__original-radio" type="radio"><span id="hover" class="el-radio-button__inner">Other</span></label><label class="el-radio-button is-disabled is-active"><input disabled checked class="el-radio-button__original-radio" type="radio"><span id="disabled" class="el-radio-button__inner">Disabled</span></label>'
+    )
+    expect(await style('#checked', 'outline-color')).toBe(rgb('#00c4e5'))
+    expect(await style('#checked', 'background-color')).toBe(rgb('#093d7e'))
+    await page.hover('#hover')
+    expect(await style('#hover', 'color')).toBe(rgb('#00c4e5'))
+    await focus('#input')
+    expect(await style('#checked', 'outline-color')).toBe(rgb('#00c4e5'))
+    expect(await style('#checked', 'outline-width')).toBe('2px')
+    expect(await style('#disabled', 'outline-color')).not.toBe(rgb('#00c4e5'))
+  })
+
+  it.each(['checkbox', 'radio'])(
+    '%s bordered selection excludes disabled controls',
+    async (type) => {
+      await renderStates(
+        `<label id="enabled" class="el-${type} is-bordered is-checked">Selected</label><label id="disabled" class="el-${type} is-bordered is-checked is-disabled">Disabled</label>`
+      )
+      expect(await style('#enabled', 'border-color')).toBe(rgb('#00c4e5'))
+      expect(await style('#disabled', 'border-color')).not.toBe(rgb('#00c4e5'))
+    }
+  )
+
+  it('shows tabs active and fallback bars and keyboard focus', async () => {
+    await renderStates(
+      '<div class="el-tabs"><div class="el-tabs__header"><div class="el-tabs__nav"><div id="bar" class="el-tabs__active-bar is-hidden"></div><div id="tab" class="el-tabs__item is-active" tabindex="0">Tab</div></div></div></div>'
+    )
+    expect(await style('#bar', 'background-color')).toBe(rgb('#00c4e5'))
+    expect(await style('#tab', 'background-color', '::after')).toBe(
+      rgb('#00c4e5')
+    )
+    await focus('#tab')
+    expect(await style('#tab', 'box-shadow')).toContain(rgb('#00c4e5'))
+  })
+
+  it('makes finished step text, icon and connector readable', async () => {
+    await renderStates(
+      '<div class="el-steps"><div class="el-step is-horizontal"><div id="head" class="el-step__head is-finish"><div class="el-step__line"><i id="line" class="el-step__line-inner" style="border-width:1px;width:100%"></i></div><div class="el-step__icon is-text">1</div></div><div class="el-step__main"><div id="title" class="el-step__title is-finish">Finished</div><div id="description" class="el-step__description is-finish">Description</div></div></div></div>'
+    )
+    for (const selector of ['#head', '#title', '#description'])
+      expect(await style(selector, 'color')).toBe(rgb('#00c4e5'))
+    expect(await style('#line', 'border-color')).toBe(rgb('#00c4e5'))
+  })
+
+  it('keeps today readable in a selected calendar cell', async () => {
+    await renderStates(
+      '<div class="el-calendar"><table class="el-calendar-table"><tbody><tr><td id="today" class="is-today is-selected"><div class="el-calendar-day">20</div></td></tr></tbody></table></div>'
+    )
+    expect(await style('#today', 'color')).toBe(rgb('#00c4e5'))
+    expect(
+      contrast(
+        await style('#today', 'color'),
+        await style('#today', 'background-color')
+      )
+    ).toBeGreaterThanOrEqual(4.5)
+  })
+
+  it.each(['primary', 'success', 'warning', 'danger', 'info'])(
+    '%s tag text, close hover and focus preserve contrast for every effect',
+    async (type) => {
+      await renderStates(
+        ['light', 'plain', 'dark']
+          .map(
+            (effect) =>
+              `<span id="${effect}" class="el-tag el-tag--${type} el-tag--${effect}"><span class="el-tag__content">Tag</span><button id="${effect}-close" class="el-tag__close"><i class="el-icon">×</i></button></span>`
+          )
+          .join('')
+      )
+      if (type !== 'primary')
+        expect(
+          contrast(
+            await style('#dark', 'color'),
+            await style('#dark', 'background-color')
+          )
+        ).toBeGreaterThanOrEqual(4.5)
+      for (const effect of ['light', 'plain', 'dark']) {
+        const close = `#${effect}-close`
+        await page.hover(close)
+        const black =
+          effect !== 'dark' || ['success', 'warning', 'info'].includes(type)
+        expect(await style(close, 'color')).toBe(
+          rgb(black ? '#000000' : '#ffffff')
+        )
+        expect(
+          contrast(
+            await style(close, 'color'),
+            await style(close, 'background-color')
+          )
+        ).toBeGreaterThanOrEqual(4.5)
+        await focus(close)
+        expect(await style(close, 'outline-color')).toBe(rgb('#00c4e5'))
+      }
+    }
+  )
+
+  it.each(['date', 'month', 'year', 'quarter'])(
+    '%s picker focus preserves selected fill and disabled colors',
+    async (type) => {
+      await renderStates(`<div class="el-picker-panel el-date-picker"><table class="el-${type}-table"><tbody><tr>
+      ${['available today', 'available current', 'disabled'].map((state, i) => `<td id="cell-${i}" class="${state}" tabindex="${i === 2 ? -1 : 0}"><div class="el-date-table-cell"><span id="text-${i}" class="el-date-table-cell__text">${i}</span></div></td>`).join('')}
+      </tr></tbody></table></div>`)
+      expect(await style('#text-0', 'color')).toBe(rgb('#00c4e5'))
+      await page.hover('#text-0')
+      expect(await style('#text-0', 'background-color')).toBe(rgb('#0a2d48'))
+      for (const i of [0, 1]) {
+        await focus(`#cell-${i}`)
+        expect(await style(`#text-${i}`, 'outline-color')).toBe(rgb('#00c4e5'))
+        expect(await style(`#text-${i}`, 'outline-style')).toBe('solid')
+      }
+      expect(await style('#text-1', 'background-color')).toBe(rgb('#126681'))
+      expect(await style('#text-1', 'color')).toBe(rgb('#ffffff'))
+      await page.hover('#text-2')
+      expect(await style('#text-2', 'color')).not.toBe(rgb('#00c4e5'))
+    }
+  )
+
+  it('shows time confirmation and hovered arrows in cyan', async () => {
+    await renderStates(
+      '<div class="el-time-panel"><div class="el-time-spinner"><div class="el-time-spinner__wrapper is-arrow"><i id="arrow" class="el-icon el-time-spinner__arrow arrow-up">↑</i><ul class="el-time-spinner__list"><li class="el-time-spinner__item">11</li><li class="el-time-spinner__item is-active">12</li><li class="el-time-spinner__item">13</li></ul></div></div><button id="confirm" class="el-time-panel__btn confirm">OK</button></div>'
+    )
+    expect(await style('#confirm', 'color')).toBe(rgb('#00c4e5'))
+    await page.hover('#arrow')
+    expect(await style('#arrow', 'color')).toBe(rgb('#00c4e5'))
+  })
+
+  it('highlights only available transfer items on hover', async () => {
+    await renderStates(
+      `<div class="el-transfer"><div class="el-transfer-panel">${['', 'is-checked', 'is-disabled'].map((state, i) => `<label id="item-${i}" class="el-checkbox el-transfer-panel__item ${state}"><span class="el-checkbox__input ${state}"><span class="el-checkbox__inner"></span></span><span id="label-${i}" class="el-checkbox__label">Item</span></label>`).join('')}</div></div>`
+    )
+    await page.hover('#item-0')
+    expect(await style('#label-0', 'color')).toBe(rgb('#00c4e5'))
+    await page.hover('#item-1')
+    expect(await style('#label-1', 'color')).toBe(rgb('#c4d1de'))
+    await page.hover('#item-2')
+    expect(await style('#label-2', 'color')).toBe(rgb('#596f86'))
+  })
+
+  it.each(['', 'success', 'warning', 'exception'])(
+    'keeps %s line progress and inside text readable',
+    async (status) => {
+      await renderStates(
+        `<div class="el-progress el-progress--line is-${status}"><div class="el-progress-bar"><div id="track" class="el-progress-bar__outer"><div id="bar" class="el-progress-bar__inner" style="width:50%"><div id="text" class="el-progress-bar__innerText">50%</div></div></div></div></div>`
+      )
+      expect(await style('#text', 'color')).toBe(rgb('#000000'))
+      expect(
+        contrast(
+          await style('#text', 'color'),
+          await style('#bar', 'background-color')
+        )
+      ).toBeGreaterThanOrEqual(4.5)
+      if (!status)
+        expect(await style('#bar', 'background-color')).toBe(rgb('#00c4e5'))
+      expect(await style('#track', 'outline-style')).toBe('solid')
+    }
+  )
+
+  it.each([
+    'background-color: #550000',
+    'background: linear-gradient(to right, #550000, #000055)',
+  ])('preserves custom progress %s and inside text', async (background) => {
+    await renderStates(
+      `<div class="el-progress el-progress--line is-success"><div class="el-progress-bar"><div class="el-progress-bar__outer"><div id="bar" class="el-progress-bar__inner" style="width:50%;${background}"><div id="text" class="el-progress-bar__innerText">50%</div></div></div></div></div>`
+    )
+    expect(await style('#text', 'color')).toBe(rgb('#ffffff'))
+    if (background.includes('gradient'))
+      expect(await style('#bar', 'background-image')).toContain(
+        'linear-gradient'
+      )
+    else expect(await style('#bar', 'background-color')).toBe(rgb('#550000'))
+  })
+
+  it('restores light component colors after switching dark off', async () => {
+    const fixture =
+      '<label id="bordered" class="el-checkbox is-bordered is-checked">Checked</label><label class="el-radio-button is-active"><input type="radio" class="el-radio-button__original-radio" checked><span id="radio" class="el-radio-button__inner">Radio</span></label><div class="el-switch is-checked"><input class="el-switch__input"><span id="switch" class="el-switch__core"></span></div><div class="el-segmented"><div id="segmented" class="el-segmented__item-selected"></div></div><div class="el-tabs"><div id="tabs" class="el-tabs__active-bar"></div></div><div id="steps" class="el-step__title is-finish">Done</div><div class="el-calendar"><table class="el-calendar-table"><tbody><tr><td id="calendar" class="is-today is-selected">20</td></tr></tbody></table></div><div class="el-picker-panel"><table class="el-quarter-table"><tbody><tr><td class="today"><span id="date" class="el-date-table-cell__text">Q1</span></td></tr></tbody></table></div><button id="time" class="el-time-panel__btn confirm">OK</button><div class="el-slider"><div class="el-slider__runway"><div id="bar" class="el-slider__bar"></div></div></div><span id="tag" class="el-tag el-tag--success el-tag--dark">Tag</span><div class="el-progress el-progress--line"><div class="el-progress-bar"><div id="progress" class="el-progress-bar__inner"><div id="text" class="el-progress-bar__innerText">50%</div></div></div></div><div class="el-progress el-progress--circle"><svg><path id="circle" stroke="#126681" /></svg></div>'
+    await render(fixture, false)
+    const properties = [
+      ['#bar', 'background-color'],
+      ['#tag', 'color'],
+      ['#progress', 'background-color'],
+      ['#text', 'color'],
+      ['#circle', 'stroke'],
+      ['#bordered', 'border-color'],
+      ['#radio', 'background-color'],
+      ['#switch', 'border-color'],
+      ['#segmented', 'background-color'],
+      ['#tabs', 'background-color'],
+      ['#steps', 'color'],
+      ['#calendar', 'color'],
+      ['#date', 'color'],
+      ['#time', 'color'],
+    ]
+    const light = await Promise.all(
+      properties.map(([selector, property]) => style(selector, property))
+    )
+    await page.$eval(
+      'style',
+      (el, baseline) => {
+        el.textContent = baseline
+      },
+      lightBaseline
+    )
+    expect(
+      await Promise.all(
+        properties.map(([selector, property]) => style(selector, property))
+      )
+    ).toEqual(light)
+    await render(fixture, false)
+    await page.evaluate(() => document.documentElement.classList.add('dark'))
+    expect(await style('#circle', 'stroke')).toBe(rgb('#126681'))
+    await page.evaluate(() => document.documentElement.classList.remove('dark'))
+    expect(
+      await Promise.all(
+        properties.map(([selector, property]) => style(selector, property))
+      )
+    ).toEqual(light)
   })
 })

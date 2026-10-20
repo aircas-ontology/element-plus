@@ -3,6 +3,11 @@
   --el-calendar-selected-bg-color: var(--el-fill-color-darker);
 }
 
+// Today can also be selected; primary text disappears on the selected fill.
+:root.dark .el-calendar-table td.is-today {
+  color: var(--el-border-color-hover);
+}
+
 // Keep the existing border widths, including the range calendar's hidden edges.
 :root.dark .el-calendar__header,
 :root.dark .el-calendar-table td {

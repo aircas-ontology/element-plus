@@ -4,3 +4,23 @@
   --el-tag-text-color: var(--el-border-color-hover);
   --el-tag-hover-color: var(--el-border-color-hover);
 }
+
+// Bright semantic fills require dark text, including the resting close icon.
+@each $type in (success, warning, danger, info) {
+  :root.dark .el-tag.el-tag--#{$type}.el-tag--dark {
+    --el-tag-text-color: var(--el-color-black);
+  }
+}
+
+// Native close hover uses white over semantic/cyan fills. Only the dark effect's
+// primary and danger hover fills are dark enough to keep that white icon.
+:root.dark .el-tag:is(.el-tag--light, .el-tag--plain) .el-tag__close:hover,
+:root.dark
+  .el-tag.el-tag--dark:is(.el-tag--success, .el-tag--warning, .el-tag--info)
+  .el-tag__close:hover {
+  color: var(--el-color-black);
+}
+
+:root.dark .el-tag__close:focus-visible {
+  outline-color: var(--el-border-color-hover);
+}

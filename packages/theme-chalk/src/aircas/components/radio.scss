@@ -3,6 +3,10 @@
   --el-radio-input-border-color-hover: var(--el-border-color-hover);
 }
 
+:root.dark .el-radio.is-bordered.is-checked:not(.is-disabled) {
+  border-color: var(--el-border-color-hover);
+}
+
 // Checked radio colors are compiled from Sass maps; no local CSS variables exist.
 :root.dark .el-radio__input.is-checked:not(.is-disabled) {
   .el-radio__inner {

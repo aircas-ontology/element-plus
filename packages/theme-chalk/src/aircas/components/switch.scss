@@ -3,11 +3,15 @@
   --el-switch-off-color: var(--el-fill-color);
 }
 
+:root.dark .el-switch:not(.is-disabled) {
+  --el-switch-border-color: var(--el-border-color);
+}
+
 // Active labels and keyboard outlines need contrast beyond the dark primary.
 :root.dark .el-switch:not(.is-disabled) .el-switch__label.is-active {
   color: var(--el-border-color-hover);
 }
 
-:root.dark .el-switch__input:focus-visible + .el-switch__core {
+:root.dark .el-switch__input:focus-visible ~ .el-switch__core {
   outline-color: var(--el-border-color-hover);
 }

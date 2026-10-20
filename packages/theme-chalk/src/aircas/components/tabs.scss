@@ -1,4 +1,13 @@
 // Native tab states use primary directly; retain readable text and selected surfaces.
+:root.dark .el-tabs__active-bar,
+:root.dark .el-tabs__active-bar.is-hidden ~ .is-active::after {
+  background-color: var(--el-border-color-hover);
+}
+
+:root.dark .el-tabs__item:not(.is-disabled):focus-visible {
+  box-shadow: 0 0 2px 2px var(--el-border-color-hover) inset;
+}
+
 :root.dark .el-tabs__item:not(.is-disabled) {
   color: var(--el-text-color-secondary);
 }
